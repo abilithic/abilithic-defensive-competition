@@ -2,32 +2,53 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 // GET /api/v1/leaderboard?comp=<id>  (publik) — data papan skor
-// Tanpa comp: ambil sesi aktif terbaru (running/paused/waiting).
+// Tanpa comp: ambil sesi aktif terbaru (running/paused/waiting/ended).
+// Menyertakan blok "debug" untuk diagnosa (aman dibuka publik: tak ada rahasia).
 export async function GET(req: NextRequest) {
   const db = supabaseAdmin();
   const url = new URL(req.url);
-  let compId = url.searchParams.get("comp");
+  const compId = url.searchParams.get("comp");
 
-  let comp: any;
+  // Diagnostik: berapa total sesi yang DILIHAT oleh deployment ini?
+  const { count: totalComps, error: countErr } = await db
+    .from("competitions")
+    .select("*", { count: "exact", head: true });
+
+  let comp: any = null;
+  let selErr: string | null = null;
+
   if (compId) {
-    const { data } = await db.from("competitions").select("*").eq("id", compId).maybeSingle();
-    comp = data;
+    const { data, error } = await db
+      .from("competitions").select("*").eq("id", compId).limit(1);
+    comp = data?.[0] ?? null;
+    selErr = error?.message ?? null;
   } else {
-    const { data } = await db
+    const { data, error } = await db
       .from("competitions")
       .select("*")
       .in("status", ["running", "paused", "waiting", "ended"])
       .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    comp = data;
+      .limit(1);
+    comp = data?.[0] ?? null;
+    selErr = error?.message ?? null;
   }
 
-  if (!comp) return NextResponse.json({ competition: null, rows: [] });
+  if (!comp) {
+    return NextResponse.json({
+      competition: null,
+      rows: [],
+      debug: {
+        total_competitions: totalComps ?? null,
+        count_error: countErr?.message ?? null,
+        select_error: selErr,
+      },
+    });
+  }
 
-  const { data: rows } = await db
+  const { data: rows, error: rowsErr } = await db
     .from("leaderboard")
     .select("*")
     .eq("competition_id", comp.id)
@@ -43,5 +64,9 @@ export async function GET(req: NextRequest) {
       server_time_ms: Date.now(),
     },
     rows: rows ?? [],
+    debug: {
+      total_competitions: totalComps ?? null,
+      rows_error: rowsErr?.message ?? null,
+    },
   });
 }
