@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     artifacts: snap.artifacts || {},
     signature: req.headers.get("x-signature"),
   }).select("id").single();
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error || !inserted) return NextResponse.json({ error: error?.message ?? "gagal simpan snapshot" }, { status: 500 });
 
   // === BASELINE & ELIGIBILITY (fase start) — TDD §13 ===
   if (phase === "start") {

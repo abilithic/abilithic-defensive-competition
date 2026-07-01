@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
     .select("status")
     .eq("id", participant.competition_id)
     .single();
+  if (!comp) return NextResponse.json({ error: "sesi tidak ditemukan" }, { status: 404 });
 
   // skor hanya diterima saat RUNNING (scoring window)
   if (comp.status !== "running") {

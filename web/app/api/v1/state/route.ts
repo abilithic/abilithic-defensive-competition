@@ -26,6 +26,7 @@ export async function GET(req: NextRequest) {
     .select("status,difficulty,hint_policy,penalty_weight,ends_at")
     .eq("id", participant.competition_id)
     .single();
+  if (!comp) return NextResponse.json({ error: "sesi tidak ditemukan" }, { status: 404 });
 
   // ambil daftar check aktif dari preset difficulty
   const { data: diff } = await db

@@ -36,7 +36,7 @@ export default function Leaderboard() {
     // realtime: refetch saat ada skor baru (best-effort)
     let channel: any;
     try {
-      const sb = supabaseBrowser();
+      const sb: any = supabaseBrowser();
       channel = sb
         .channel("scores-stream")
         .on("postgres_changes", { event: "INSERT", schema: "public", table: "scores" }, load)

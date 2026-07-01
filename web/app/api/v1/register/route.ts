@@ -52,9 +52,9 @@ export async function POST(req: NextRequest) {
     .select("id")
     .single();
 
-  if (error) {
+  if (error || !participant) {
     // unik (competition_id, full_name, school) bisa bentrok
-    return NextResponse.json({ error: "peserta sudah terdaftar / gagal", detail: error.message }, { status: 409 });
+    return NextResponse.json({ error: "peserta sudah terdaftar / gagal", detail: error?.message }, { status: 409 });
   }
 
   const secret = deriveSecret(participant.id);
