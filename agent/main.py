@@ -73,6 +73,12 @@ class Runtime:
         self.score = 0
         self.breakdown = []
 
+        # koneksi
+        self.conn = "connecting"  # connecting | ok | error
+        self.last_sync = None     # epoch detik poll sukses terakhir
+        self.fail_attempt = 0
+        self._sync_lock = threading.Lock()  # cegah sync bersamaan (loop vs tombol)
+
     # ---------- dipanggil dari UI ----------
     def do_register(self, name, school, session_code):
         try:
@@ -116,6 +122,7 @@ class Runtime:
                     "hint": hints.get(code, {}).get("hint"),
                     "points": c.points if c else 10,
                 })
+            last_sync_sec = int(time.time() - self.last_sync) if self.last_sync else None
             return {
                 "registered": self.registered,
                 "name": self.name, "school": self.school,
@@ -123,7 +130,56 @@ class Runtime:
                 "score": self.score,
                 "remaining_sec": remaining,
                 "checks": checks,
+                "connection": self.conn,          # connecting | ok | error
+                "last_sync_sec": last_sync_sec,    # berapa detik lalu poll sukses
             }
+
+    def sync_once(self):
+        """Satu siklus: poll state -> terapkan -> scoring. Dipakai loop & tombol refresh.
+        Return True bila poll sukses."""
+        if not self.registered:
+            return False
+        with self._sync_lock:
+            state = self.api.get_state()
+            if state is None:
+                self.state_mgr.mark_offline()
+                self.conn = "error"
+                self.fail_attempt += 1
+                self.api.flush_queue()
+                return False
+            self.fail_attempt = 0
+            self.conn = "ok"
+            self.last_sync = time.time()
+
+            with self.lock:
+                self.server_status = state.get("status", "waiting")
+                self.active_codes = state.get("active_check_codes", []) or self.active_codes
+                self.hint_policy = state.get("hint_policy", self.hint_policy)
+                self.difficulty = state.get("difficulty", self.difficulty)
+                self.ends_at_ms = state.get("ends_at_ms", self.ends_at_ms)
+                self.penalty_weight = float(state.get("penalty_weight", self.penalty_weight))
+            self.state_mgr.apply_server_status(self.server_status)
+            self.api.send_heartbeat(AGENT_VERSION, int(time.time() - self.started))
+
+            if self.state_mgr.should_capture_start():
+                self._safe_snapshot("start")
+
+            if self.state_mgr.is_scoring():
+                meta = self.runner.active_checks_meta(self.active_codes)
+                cur, _ev = self.runner.run_active(self.active_codes)
+                result = compute_score(meta, self.start_state, cur, self.penalty_weight)
+                with self.lock:
+                    self.current_state = cur
+                    self.score = result["total"]
+                    self.breakdown = result["breakdown"]
+                payload = [{"code": b["code"], "passed": b["passed"]} for b in result["breakdown"]]
+                self.api.send_score(result["total"], payload, int(time.time() * 1000))
+                self.log.info("score_sent", score=result["total"])
+
+            if self.state_mgr.should_capture_stop():
+                self._safe_snapshot("stop")
+                self.log.info("competition_ended_frozen", final_score=self.score)
+            return True
 
     # ---------- helper ----------
     def _capture_and_send_snapshot(self, phase):
@@ -160,59 +216,17 @@ def main():
     log.info("local_ui_started", port=cfg.get("local_ui_port", 8080))
 
     poll_interval = cfg.get("poll_interval_sec", 15)
-    fail_attempt = 0
 
     # ---------- LOOP UTAMA ----------
     while True:
         if not rt.registered:
             time.sleep(2)
             continue
-
-        state = rt.api.get_state()
-        if state is None:
-            rt.state_mgr.mark_offline()
-            rt.api.flush_queue()            # coba kirim antrian tertunda
-            rt.api.backoff_sleep(fail_attempt)
-            fail_attempt += 1
+        ok = rt.sync_once()
+        if not ok:
+            rt.api.backoff_sleep(rt.fail_attempt)
             continue
-        fail_attempt = 0
-
-        # terapkan state dari server
-        with rt.lock:
-            rt.server_status = state.get("status", "waiting")
-            rt.active_codes = state.get("active_check_codes", []) or rt.active_codes
-            rt.hint_policy = state.get("hint_policy", rt.hint_policy)
-            rt.difficulty = state.get("difficulty", rt.difficulty)
-            rt.ends_at_ms = state.get("ends_at_ms", rt.ends_at_ms)
-            rt.penalty_weight = float(state.get("penalty_weight", rt.penalty_weight))
-        rt.state_mgr.apply_server_status(rt.server_status)
-
-        # heartbeat
-        rt.api.send_heartbeat(AGENT_VERSION, int(time.time() - rt.started))
-
-        # ambil start-snapshot sekali saat RUNNING
-        if rt.state_mgr.should_capture_start():
-            rt._safe_snapshot("start")
-
-        # scoring hanya saat RUNNING
-        if rt.state_mgr.is_scoring():
-            meta = rt.runner.active_checks_meta(rt.active_codes)
-            cur, _ev = rt.runner.run_active(rt.active_codes)
-            result = compute_score(meta, rt.start_state, cur, rt.penalty_weight)
-            with rt.lock:
-                rt.current_state = cur
-                rt.score = result["total"]
-                rt.breakdown = result["breakdown"]
-            checks_payload = [{"code": b["code"], "passed": b["passed"]} for b in result["breakdown"]]
-            rt.api.send_score(result["total"], checks_payload, int(time.time() * 1000))
-            log.info("score_sent", score=result["total"])
-
-        # ambil stop-snapshot sekali saat ENDED
-        if rt.state_mgr.should_capture_stop():
-            rt._safe_snapshot("stop")
-            log.info("competition_ended_frozen", final_score=rt.score)
-
-        # interval adaptif: lebih longgar saat menunggu
+        # interval adaptif: lebih rapat saat running, longgar saat menunggu
         sleep_for = poll_interval if rt.server_status == "running" else max(poll_interval, 20)
         time.sleep(sleep_for)
 

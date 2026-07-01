@@ -32,4 +32,10 @@ def create_ui(runtime):
     def status():
         return jsonify(runtime.status_snapshot())
 
+    @app.route("/refresh", methods=["POST"])
+    def refresh():
+        # paksa agent poll ke server SEKARANG (tanpa nunggu interval)
+        ok = runtime.sync_once()
+        return jsonify({"ok": ok, **runtime.status_snapshot()})
+
     return app

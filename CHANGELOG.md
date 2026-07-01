@@ -19,6 +19,9 @@ versi mengikuti [SemVer](https://semver.org) (TDD §24).
 - **Custom timer** saat buat sesi (menit), default per tingkat.
 - **Batalkan diskualifikasi** (requalify) di admin.
 - Kiosk jadi **jendela companion** (bukan fullscreen-lock) agar peserta bisa pakai terminal.
+- **Indikator koneksi** (titik hijau/kuning/merah) + tombol **"Sinkron sekarang"** di panel
+  peserta → paksa agent poll ke server tanpa nunggu interval.
+- `run-agent.sh`: jalankan agent bersih (auto-bunuh proses lama di port 8080).
 
 ### Changed
 - Admin auth pindah dari header password ke sesi cookie (lib/auth.ts).

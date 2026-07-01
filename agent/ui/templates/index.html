@@ -43,6 +43,15 @@
     .tag.run{background:rgba(47,214,127,.15);color:var(--ok)} .tag.wait{background:rgba(255,176,32,.14);color:var(--warn)}
     .tag.end{background:rgba(91,140,255,.15);color:#7aa2ff}
     .msg{font-size:13px;margin-top:12px}
+    .connbar{display:flex;align-items:center;justify-content:space-between;gap:10px;
+      background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:16px}
+    .conn{display:flex;align-items:center;gap:8px;font-size:13px}
+    .dot{width:11px;height:11px;border-radius:50%;background:#666;box-shadow:0 0 0 0 rgba(0,0,0,0)}
+    .dot.ok{background:var(--ok);box-shadow:0 0 10px var(--ok)}
+    .dot.warn{background:var(--warn);box-shadow:0 0 10px var(--warn)}
+    .dot.err{background:var(--danger);box-shadow:0 0 10px var(--danger)}
+    .btn-refresh{background:#26314e;color:#fff;border:0;border-radius:9px;padding:8px 14px;font-weight:700;cursor:pointer;font-size:13px;margin:0;width:auto}
+    .btn-refresh:active{transform:translateY(1px)}
   </style>
 </head>
 <body>
@@ -50,6 +59,12 @@
   <div class="brand">
     <div class="logo">◈</div>
     <div><h1>abilithic DHC</h1><div class="sub">Defend · Harden · Compete</div></div>
+  </div>
+
+  <!-- STATUS KONEKSI + REFRESH -->
+  <div class="connbar">
+    <div class="conn"><span class="dot" id="dot"></span><span id="conn-text">Menyambung…</span></div>
+    <button class="btn-refresh" id="btn-refresh" onclick="doRefresh()">↻ Sinkron sekarang</button>
   </div>
 
   <!-- REGISTRASI -->
@@ -106,9 +121,26 @@ async function doRegister(){
 const STATE_LABEL={waiting:'MENUNGGU',running:'BERLANGSUNG',paused:'JEDA',ended:'SELESAI',registered:'SIAP',init:'—'};
 function fmt(s){ if(s==null||s<0)return '--:--'; const m=Math.floor(s/60),x=s%60;
   return String(m).padStart(2,'0')+':'+String(x).padStart(2,'0'); }
+function updateConn(st){
+  const dot=document.getElementById('dot'), txt=document.getElementById('conn-text');
+  let cls='warn', label='Menyambung…';
+  if(st.connection==='ok'){
+    if(st.last_sync_sec!=null && st.last_sync_sec>40){ cls='warn'; label='Sinkron tertunda ('+st.last_sync_sec+'s lalu)'; }
+    else { cls='ok'; label='Terhubung'+(st.last_sync_sec!=null?' · '+st.last_sync_sec+'s lalu':''); }
+  } else if(st.connection==='error'){ cls='err'; label='Terputus — coba Sinkron'; }
+  else { cls='warn'; label='Menyambung…'; }
+  dot.className='dot '+cls; txt.textContent=label;
+}
+async function doRefresh(){
+  const b=document.getElementById('btn-refresh'); b.disabled=true; const old=b.textContent; b.textContent='↻ Menyinkronkan…';
+  try{ const st=await (await fetch('/refresh',{method:'POST'})).json(); updateConn(st); await poll(); }
+  catch(e){ document.getElementById('dot').className='dot err'; document.getElementById('conn-text').textContent='Gagal sinkron'; }
+  finally{ b.disabled=false; b.textContent=old; }
+}
 async function poll(){
   try{
     const st=await (await fetch('/status')).json();
+    updateConn(st);
     if(st.registered){
       document.getElementById('register-card').classList.add('hidden');
       document.getElementById('status-card').classList.remove('hidden');
@@ -127,7 +159,10 @@ async function poll(){
           <div style="text-align:right;white-space:nowrap">${icon} <span class="pill">+${c.points}</span></div></div>`;
       }).join('');
     }
-  }catch(e){}
+  }catch(e){
+    document.getElementById('dot').className='dot err';
+    document.getElementById('conn-text').textContent='Agent tidak merespons';
+  }
 }
 setInterval(poll,2000); poll();
 </script>
