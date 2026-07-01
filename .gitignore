@@ -1,0 +1,35 @@
+# ---- Node / Next.js ----
+node_modules/
+.next/
+out/
+dist/
+*.tsbuildinfo
+
+# ---- Env & secrets ----
+.env
+.env.local
+.env*.local
+*.key
+*.pem
+agent/config.yaml
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# ---- VM images (JANGAN commit OVA besar — TDD §30) ----
+*.ova
+*.ovf
+*.vmdk
+*.iso
+
+# ---- OS / editor ----
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log

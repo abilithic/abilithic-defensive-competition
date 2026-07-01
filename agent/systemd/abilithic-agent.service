@@ -1,0 +1,17 @@
+[Unit]
+Description=abilithic DHC Agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Sesuaikan path instalasi agen
+WorkingDirectory=/opt/abilithic-agent
+ExecStart=/usr/bin/python3 /opt/abilithic-agent/main.py
+Restart=always
+RestartSec=5
+User=root
+# Auto-restart bila crash (TDD §39 Risk Register)
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,11 @@
+code: ufw_enabled
+title: "Aktifkan firewall UFW"
+description: "Firewall UFW harus berstatus active"
+points: 10
+is_penalty: false
+must_stay_passing: false
+category: firewall
+difficulty_tags: [easy, medium, hard]
+hint_basic: "Cek status firewall: sudo ufw status"
+hint_advanced: "Aktifkan: sudo ufw enable"
+schema_version: "1.0"

@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  agent-tests:
+    name: Agent — unit test scoring (kritis)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps
+        run: pip install pytest pyyaml
+      - name: Compile-check agent
+        run: |
+          python -m py_compile agent/main.py agent/engine/*.py agent/runner/*.py \
+            agent/network/*.py agent/snapshot/*.py agent/crypto/*.py \
+            agent/logger/*.py agent/checks/*/check.py
+      - name: Run scoring unit tests
+        run: cd tests && python -m pytest -q
+
+  web-build:
+    name: Web — typecheck & build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install
+        working-directory: web
+        run: npm install
+      - name: Build (typecheck)
+        working-directory: web
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy
+          SUPABASE_SERVICE_ROLE_KEY: dummy
+          AGENT_HMAC_SECRET: dummy
+          ADMIN_PASSWORD: dummy
+        run: npm run build

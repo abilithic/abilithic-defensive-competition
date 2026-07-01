@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>abilithic DHC — Agent</title>
+  <style>
+    :root { --bg:#0b1020; --card:#151b2e; --fg:#e7ecf5; --mut:#8b97b0; --ok:#33d685; --warn:#ffb020; --acc:#5b8cff; }
+    *{box-sizing:border-box} body{margin:0;font-family:system-ui,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--fg)}
+    .wrap{max-width:720px;margin:0 auto;padding:24px}
+    h1{font-size:20px;margin:0 0 2px} .sub{color:var(--mut);font-size:13px;margin-bottom:20px}
+    .card{background:var(--card);border:1px solid #232c45;border-radius:12px;padding:18px;margin-bottom:16px}
+    label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
+    input{width:100%;padding:10px;border-radius:8px;border:1px solid #2b3654;background:#0e1426;color:var(--fg)}
+    button{margin-top:14px;width:100%;padding:11px;border:0;border-radius:8px;background:var(--acc);color:#fff;font-weight:600;cursor:pointer}
+    button:disabled{opacity:.5;cursor:default}
+    .row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #222b44}
+    .row:last-child{border-bottom:0}
+    .pill{font-size:12px;padding:3px 9px;border-radius:999px;background:#222b44;color:var(--mut)}
+    .ok{color:var(--ok)} .muted{color:var(--mut)} .warnc{color:var(--warn)}
+    .big{font-size:34px;font-weight:700} .hint{font-size:12px;color:var(--mut);margin-top:2px}
+    .hidden{display:none}
+    .head{display:flex;justify-content:space-between;align-items:center}
+    .score{font-size:28px;font-weight:700;color:var(--acc)}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h1>abilithic DHC — Agent</h1>
+  <div class="sub">Defend. Harden. Compete.</div>
+
+  <!-- REGISTRASI -->
+  <div class="card" id="register-card">
+    <strong>Registrasi Peserta</strong>
+    <label>Nama lengkap</label>
+    <input id="name" placeholder="Nama kamu">
+    <label>Sekolah / Instansi</label>
+    <input id="school" placeholder="Opsional">
+    <label>Kode Sesi (dari panitia)</label>
+    <input id="code" placeholder="mis. DHC-7Q2X">
+    <button id="btn-reg" onclick="doRegister()">Daftar</button>
+    <div id="reg-msg" class="hint"></div>
+  </div>
+
+  <!-- STATUS -->
+  <div class="card hidden" id="status-card">
+    <div class="head">
+      <div>
+        <div class="muted" style="font-size:12px">STATUS LOMBA</div>
+        <div class="big" id="state">—</div>
+      </div>
+      <div style="text-align:right">
+        <div class="muted" style="font-size:12px">SISA WAKTU</div>
+        <div class="big" id="timer">--:--</div>
+      </div>
+    </div>
+    <div class="head" style="margin-top:8px">
+      <span class="muted" id="who">—</span>
+      <span class="score" id="score">0</span>
+    </div>
+  </div>
+
+  <!-- CHECKLIST -->
+  <div class="card hidden" id="checks-card">
+    <strong>Progress Hardening</strong>
+    <div id="checks"></div>
+  </div>
+</div>
+
+<script>
+async function doRegister(){
+  const btn = document.getElementById('btn-reg');
+  btn.disabled = true;
+  const body = {
+    name: document.getElementById('name').value,
+    school: document.getElementById('school').value,
+    session_code: document.getElementById('code').value,
+  };
+  const msg = document.getElementById('reg-msg');
+  try{
+    const r = await fetch('/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const j = await r.json();
+    if(j.ok){ msg.textContent = j.message || 'Berhasil terdaftar. Menunggu START dari panitia...'; }
+    else { msg.textContent = '⚠ ' + (j.error||'Gagal'); btn.disabled = false; }
+  }catch(e){ msg.textContent = '⚠ Tidak bisa menghubungi agent.'; btn.disabled = false; }
+}
+
+function fmt(sec){
+  if(sec==null||sec<0) return '--:--';
+  const m=Math.floor(sec/60), s=sec%60;
+  return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+
+async function poll(){
+  try{
+    const r = await fetch('/status'); const st = await r.json();
+    if(st.registered){
+      document.getElementById('register-card').classList.add('hidden');
+      document.getElementById('status-card').classList.remove('hidden');
+      document.getElementById('who').textContent = st.name + (st.school? ' · '+st.school : '');
+      document.getElementById('state').textContent = (st.state||'—').toUpperCase();
+      document.getElementById('score').textContent = st.score ?? 0;
+      document.getElementById('timer').textContent = fmt(st.remaining_sec);
+    }
+    if(st.checks && st.checks.length){
+      document.getElementById('checks-card').classList.remove('hidden');
+      document.getElementById('checks').innerHTML = st.checks.map(c=>{
+        const icon = c.passed ? '<span class="ok">✔ Selesai</span>'
+                              : '<span class="warnc">◻ Belum</span>';
+        const hint = (!c.passed && c.hint) ? `<div class="hint">${c.hint}</div>` : '';
+        return `<div class="row"><div><div>${c.title||c.code}</div>${hint}</div><div>${icon} <span class="pill">+${c.points}</span></div></div>`;
+      }).join('');
+    }
+  }catch(e){ /* agent mungkin sibuk */ }
+}
+setInterval(poll, 2000); poll();
+</script>
+</body>
+</html>

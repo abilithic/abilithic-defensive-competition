@@ -1,0 +1,43 @@
+:root {
+  --bg: #0b1020;
+  --card: #151b2e;
+  --fg: #e7ecf5;
+  --mut: #8b97b0;
+  --acc: #5b8cff;
+  --ok: #33d685;
+  --warn: #ffb020;
+  --line: #232c45;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg);
+  font-family: system-ui, "Segoe UI", Roboto, sans-serif; }
+a { color: var(--acc); }
+.wrap { max-width: 920px; margin: 0 auto; padding: 28px 20px; }
+.brand { font-size: 22px; font-weight: 800; letter-spacing: .3px; }
+.tag { color: var(--mut); font-size: 13px; margin-bottom: 22px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  padding: 18px; margin-bottom: 16px; }
+.head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+.pill { font-size: 12px; padding: 4px 10px; border-radius: 999px; background: #222b44; color: var(--mut); }
+.pill.run { background: rgba(51,214,133,.15); color: var(--ok); }
+.pill.wait { background: rgba(255,176,32,.15); color: var(--warn); }
+.timer { font-size: 30px; font-weight: 800; }
+table { width: 100%; border-collapse: collapse; margin-top: 6px; }
+th, td { text-align: left; padding: 11px 10px; border-bottom: 1px solid var(--line); }
+th { color: var(--mut); font-size: 12px; text-transform: uppercase; letter-spacing: .5px; }
+td.rank { font-weight: 800; width: 48px; }
+td.score { font-weight: 800; color: var(--acc); text-align: right; }
+.top1 td.rank { color: #ffd23f; }
+.muted { color: var(--mut); }
+input, select, button { font: inherit; }
+label { display:block; font-size:13px; color:var(--mut); margin:10px 0 4px; }
+input, select { width:100%; padding:10px; border-radius:8px; border:1px solid var(--line);
+  background:#0e1426; color:var(--fg); }
+button { padding:10px 16px; border:0; border-radius:8px; background:var(--acc); color:#fff;
+  font-weight:700; cursor:pointer; }
+button.sec { background:#2a3450; }
+button.danger { background:#c8413b; }
+.row-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+.code { font-family: ui-monospace, monospace; background:#0e1426; padding:3px 8px; border-radius:6px; }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+@media (max-width:640px){ .grid2 { grid-template-columns:1fr; } }
