@@ -88,9 +88,16 @@ class Runtime:
             self.api.set_credentials(res["participant_id"], res["agent_secret"])
             self.state_mgr.mark_registered()
         self.log.info("registered", participant_id=self.participant_id)
-        # snapshot fase registration (baseline awal)
-        self._capture_and_send_snapshot("registration")
+        # snapshot fase registration di BACKGROUND agar UI langsung merespons
+        threading.Thread(target=self._safe_snapshot, args=("registration",),
+                         daemon=True).start()
         return True, "Berhasil terdaftar. Menunggu START dari panitia..."
+
+    def _safe_snapshot(self, phase):
+        try:
+            self._capture_and_send_snapshot(phase)
+        except Exception as e:
+            self.log.error("snapshot_failed", phase=phase, error=str(e))
 
     def status_snapshot(self):
         with self.lock:
@@ -185,7 +192,7 @@ def main():
 
         # ambil start-snapshot sekali saat RUNNING
         if rt.state_mgr.should_capture_start():
-            rt._capture_and_send_snapshot("start")
+            rt._safe_snapshot("start")
 
         # scoring hanya saat RUNNING
         if rt.state_mgr.is_scoring():
@@ -202,7 +209,7 @@ def main():
 
         # ambil stop-snapshot sekali saat ENDED
         if rt.state_mgr.should_capture_stop():
-            rt._capture_and_send_snapshot("stop")
+            rt._safe_snapshot("stop")
             log.info("competition_ended_frozen", final_score=rt.score)
 
         # interval adaptif: lebih longgar saat menunggu

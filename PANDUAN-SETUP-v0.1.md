@@ -211,7 +211,7 @@ sudo apt install -y git python3-pip openssh-server
 Clone repo kamu (ganti `<username>`; jika repo Private, masukkan token saat diminta):
 ```bash
 cd ~
-git clone https://github.com/<username>/abilithic-defensive-competition.git
+git clone https://github.com/abilithic/abilithic-defensive-competition.git
 cd abilithic-defensive-competition/agent
 ```
 > Repo Private & susah login? Alternatif: di web GitHub, **Code → Download ZIP**, lalu
