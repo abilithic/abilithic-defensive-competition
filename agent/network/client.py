@@ -40,11 +40,13 @@ class ApiClient:
         resp = requests.post(url, data=body.encode("utf-8"), headers=headers, timeout=self.timeout)
         return resp
 
-    def _get(self, path, signed=True):
-        url = self.base + path
-        headers = {}
+    def _get(self, path, signed=True, query=None):
+        # query (mis. ?t=123) ditambahkan ke URL utk cache-bust, TAPI tanda tangan
+        # tetap atas `path` polos (server verifikasi path tanpa query).
+        url = self.base + path + (query or "")
+        headers = {"Cache-Control": "no-cache", "Pragma": "no-cache"}
         if signed and self.participant_id and self.secret:
-            headers = build_auth_headers(self.participant_id, self.secret, "GET", path, "")
+            headers.update(build_auth_headers(self.participant_id, self.secret, "GET", path, ""))
         resp = requests.get(url, headers=headers, timeout=self.timeout)
         return resp
 
@@ -60,7 +62,7 @@ class ApiClient:
     def get_state(self):
         """Return dict state atau None bila gagal (caller anggap OFFLINE)."""
         try:
-            resp = self._get("/api/v1/state")
+            resp = self._get("/api/v1/state", query=f"?t={int(time.time() * 1000)}")
             if resp.status_code == 200:
                 return resp.json()
             self.log.warn("state_non200", code=resp.status_code)

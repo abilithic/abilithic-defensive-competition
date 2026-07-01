@@ -3,12 +3,20 @@ import { supabaseAdmin } from "@/lib/supabase";
 import { verifyAgentRequest } from "@/lib/hmac";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
+
+const NO_CACHE = {
+  "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+  "CDN-Cache-Control": "no-store",
+  "Vercel-CDN-Cache-Control": "no-store",
+};
 
 // GET /api/v1/state  (TDD §16.2) — polling inti
 export async function GET(req: NextRequest) {
   const auth = await verifyAgentRequest(req, "/api/v1/state", "");
   if (!auth.ok) {
-    return NextResponse.json({ error: auth.reason }, { status: 401 });
+    return NextResponse.json({ error: auth.reason }, { status: 401, headers: NO_CACHE });
   }
 
   const db = supabaseAdmin();
@@ -18,7 +26,7 @@ export async function GET(req: NextRequest) {
     .eq("id", auth.participantId)
     .maybeSingle();
   if (!participant) {
-    return NextResponse.json({ error: "participant tidak dikenal" }, { status: 401 });
+    return NextResponse.json({ error: "participant tidak dikenal" }, { status: 401, headers: NO_CACHE });
   }
 
   const { data: comp } = await db
@@ -26,7 +34,7 @@ export async function GET(req: NextRequest) {
     .select("status,difficulty,hint_policy,penalty_weight,ends_at")
     .eq("id", participant.competition_id)
     .single();
-  if (!comp) return NextResponse.json({ error: "sesi tidak ditemukan" }, { status: 404 });
+  if (!comp) return NextResponse.json({ error: "sesi tidak ditemukan" }, { status: 404, headers: NO_CACHE });
 
   // ambil daftar check aktif dari preset difficulty
   const { data: diff } = await db
@@ -43,5 +51,5 @@ export async function GET(req: NextRequest) {
     hint_policy: comp.hint_policy,
     penalty_weight: comp.penalty_weight,
     active_check_codes: diff?.active_check_codes ?? [],
-  });
+  }, { headers: NO_CACHE });
 }
