@@ -156,7 +156,7 @@ export default function Admin() {
           </div>
         </div>
         <div className="actions" style={{ marginTop: 14 }}>
-          <button onClick={() => comp("create", undefined, { duration_minutes: durationMin })} disabled={busy}>+ Buat Sesi</button>
+          <button onClick={() => comp("create", undefined, { name, difficulty, duration_minutes: durationMin })} disabled={busy}>+ Buat Sesi</button>
         </div>
       </div>
 
