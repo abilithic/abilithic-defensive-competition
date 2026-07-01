@@ -2,3 +2,7 @@
 requests>=2.31,<3
 PyYAML>=6.0,<7
 Flask>=3.0,<4
+
+# Opsional (mode kiosk jendela-native). Kalau gagal dipasang, kiosk otomatis
+# fallback ke browser mode — jadi TIDAK wajib.
+# pywebview>=5.0

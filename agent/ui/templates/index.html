@@ -3,117 +3,133 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>abilithic DHC — Agent</title>
+  <title>abilithic DHC</title>
   <style>
-    :root { --bg:#0b1020; --card:#151b2e; --fg:#e7ecf5; --mut:#8b97b0; --ok:#33d685; --warn:#ffb020; --acc:#5b8cff; }
-    *{box-sizing:border-box} body{margin:0;font-family:system-ui,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--fg)}
-    .wrap{max-width:720px;margin:0 auto;padding:24px}
-    h1{font-size:20px;margin:0 0 2px} .sub{color:var(--mut);font-size:13px;margin-bottom:20px}
-    .card{background:var(--card);border:1px solid #232c45;border-radius:12px;padding:18px;margin-bottom:16px}
-    label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
-    input{width:100%;padding:10px;border-radius:8px;border:1px solid #2b3654;background:#0e1426;color:var(--fg)}
-    button{margin-top:14px;width:100%;padding:11px;border:0;border-radius:8px;background:var(--acc);color:#fff;font-weight:600;cursor:pointer}
-    button:disabled{opacity:.5;cursor:default}
-    .row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #222b44}
-    .row:last-child{border-bottom:0}
-    .pill{font-size:12px;padding:3px 9px;border-radius:999px;background:#222b44;color:var(--mut)}
-    .ok{color:var(--ok)} .muted{color:var(--mut)} .warnc{color:var(--warn)}
-    .big{font-size:34px;font-weight:700} .hint{font-size:12px;color:var(--mut);margin-top:2px}
+    :root{ --bg:#0a0e1a; --bg2:#0e1424; --card:#141b2e; --fg:#eef2fb; --mut:#8a97b4;
+      --line:#232d47; --acc:#5b8cff; --ok:#2fd67f; --warn:#ffb020; --danger:#ff5d5d; }
+    *{box-sizing:border-box} html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--fg);
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+      background-image:radial-gradient(900px 500px at 100% -10%,rgba(91,140,255,.14),transparent),
+        radial-gradient(700px 400px at -10% 0%,rgba(47,214,127,.09),transparent);}
+    .wrap{max-width:760px;margin:0 auto;padding:36px 22px;min-height:100%}
+    .brand{display:flex;align-items:center;gap:12px;margin-bottom:26px}
+    .logo{width:44px;height:44px;border-radius:11px;background:linear-gradient(135deg,var(--acc),#6ee7b7);
+      display:grid;place-items:center;font-weight:900;color:#071022;font-size:20px}
+    .brand h1{margin:0;font-size:22px;font-weight:800}
+    .brand .sub{color:var(--mut);font-size:13px}
+    .card{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);
+      border-radius:16px;padding:22px;margin-bottom:18px;box-shadow:0 10px 34px rgba(0,0,0,.4)}
+    label{display:block;font-size:13px;color:var(--mut);margin:12px 0 5px;font-weight:600}
+    input{width:100%;padding:13px;border-radius:11px;border:1px solid var(--line);background:#0c1220;color:var(--fg);font:inherit}
+    input:focus{outline:none;border-color:var(--acc)}
+    button{margin-top:18px;width:100%;padding:14px;border:0;border-radius:11px;background:var(--acc);
+      color:#fff;font-weight:800;font-size:15px;cursor:pointer}
+    button:disabled{opacity:.5}
     .hidden{display:none}
-    .head{display:flex;justify-content:space-between;align-items:center}
-    .score{font-size:28px;font-weight:700;color:var(--acc)}
+    .hero{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+    .state{font-size:40px;font-weight:800;line-height:1}
+    .timer{font-size:44px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:1px}
+    .lbl{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
+    .scorebig{font-size:56px;font-weight:900;color:var(--acc);line-height:1;font-variant-numeric:tabular-nums}
+    .who{color:var(--mut);font-size:14px;margin-top:4px}
+    .row{display:flex;justify-content:space-between;align-items:center;padding:13px 4px;border-bottom:1px solid var(--line)}
+    .row:last-child{border-bottom:0}
+    .chk-title{font-weight:600}
+    .hint{font-size:12px;color:var(--mut);margin-top:3px;max-width:52ch}
+    .pill{font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;background:#232d47;color:var(--mut)}
+    .ok{color:var(--ok)} .warnc{color:var(--warn)} .muted{color:var(--mut)}
+    .tag{display:inline-block;font-size:12px;font-weight:700;padding:4px 11px;border-radius:999px}
+    .tag.run{background:rgba(47,214,127,.15);color:var(--ok)} .tag.wait{background:rgba(255,176,32,.14);color:var(--warn)}
+    .tag.end{background:rgba(91,140,255,.15);color:#7aa2ff}
+    .msg{font-size:13px;margin-top:12px}
   </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>abilithic DHC — Agent</h1>
-  <div class="sub">Defend. Harden. Compete.</div>
+  <div class="brand">
+    <div class="logo">◈</div>
+    <div><h1>abilithic DHC</h1><div class="sub">Defend · Harden · Compete</div></div>
+  </div>
 
   <!-- REGISTRASI -->
   <div class="card" id="register-card">
-    <strong>Registrasi Peserta</strong>
+    <div style="font-weight:800;font-size:17px;margin-bottom:2px">Registrasi Peserta</div>
+    <div class="muted" style="font-size:13px">Isi data lalu tunggu panitia memulai lomba.</div>
     <label>Nama lengkap</label>
-    <input id="name" placeholder="Nama kamu">
+    <input id="name" placeholder="Nama kamu" autofocus>
     <label>Sekolah / Instansi</label>
     <input id="school" placeholder="Opsional">
     <label>Kode Sesi (dari panitia)</label>
-    <input id="code" placeholder="mis. DHC-7Q2X">
+    <input id="code" placeholder="mis. DHC-7Q2X" style="text-transform:uppercase">
     <button id="btn-reg" onclick="doRegister()">Daftar</button>
-    <div id="reg-msg" class="hint"></div>
+    <div id="reg-msg" class="msg muted"></div>
   </div>
 
-  <!-- STATUS -->
+  <!-- DASHBOARD -->
   <div class="card hidden" id="status-card">
-    <div class="head">
+    <div class="hero">
       <div>
-        <div class="muted" style="font-size:12px">STATUS LOMBA</div>
-        <div class="big" id="state">—</div>
+        <div class="lbl">Status Lomba</div>
+        <div class="state" id="state">—</div>
+        <div class="who" id="who">—</div>
       </div>
       <div style="text-align:right">
-        <div class="muted" style="font-size:12px">SISA WAKTU</div>
-        <div class="big" id="timer">--:--</div>
+        <div class="lbl">Sisa Waktu</div>
+        <div class="timer" id="timer">--:--</div>
+        <div style="margin-top:8px"><span class="lbl">Skor</span><div class="scorebig" id="score">0</div></div>
       </div>
-    </div>
-    <div class="head" style="margin-top:8px">
-      <span class="muted" id="who">—</span>
-      <span class="score" id="score">0</span>
     </div>
   </div>
 
   <!-- CHECKLIST -->
   <div class="card hidden" id="checks-card">
-    <strong>Progress Hardening</strong>
+    <div style="font-weight:800;font-size:16px;margin-bottom:8px">Tugas Hardening</div>
     <div id="checks"></div>
   </div>
 </div>
 
 <script>
 async function doRegister(){
-  const btn = document.getElementById('btn-reg');
-  btn.disabled = true;
-  const body = {
-    name: document.getElementById('name').value,
-    school: document.getElementById('school').value,
-    session_code: document.getElementById('code').value,
-  };
-  const msg = document.getElementById('reg-msg');
+  const btn=document.getElementById('btn-reg'); btn.disabled=true;
+  const msg=document.getElementById('reg-msg'); msg.className='msg muted'; msg.textContent='Mendaftar…';
+  const body={name:document.getElementById('name').value,
+    school:document.getElementById('school').value,
+    session_code:document.getElementById('code').value.trim().toUpperCase()};
   try{
-    const r = await fetch('/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-    const j = await r.json();
-    if(j.ok){ msg.textContent = j.message || 'Berhasil terdaftar. Menunggu START dari panitia...'; }
-    else { msg.textContent = '⚠ ' + (j.error||'Gagal'); btn.disabled = false; }
-  }catch(e){ msg.textContent = '⚠ Tidak bisa menghubungi agent.'; btn.disabled = false; }
+    const r=await fetch('/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const j=await r.json();
+    if(j.ok){ msg.className='msg ok'; msg.textContent='✔ '+(j.message||'Berhasil terdaftar. Menunggu START…'); }
+    else { msg.className='msg warnc'; msg.textContent='⚠ '+(j.error||'Gagal'); btn.disabled=false; }
+  }catch(e){ msg.className='msg warnc'; msg.textContent='⚠ Tidak bisa menghubungi agent.'; btn.disabled=false; }
 }
-
-function fmt(sec){
-  if(sec==null||sec<0) return '--:--';
-  const m=Math.floor(sec/60), s=sec%60;
-  return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-}
-
+const STATE_LABEL={waiting:'MENUNGGU',running:'BERLANGSUNG',paused:'JEDA',ended:'SELESAI',registered:'SIAP',init:'—'};
+function fmt(s){ if(s==null||s<0)return '--:--'; const m=Math.floor(s/60),x=s%60;
+  return String(m).padStart(2,'0')+':'+String(x).padStart(2,'0'); }
 async function poll(){
   try{
-    const r = await fetch('/status'); const st = await r.json();
+    const st=await (await fetch('/status')).json();
     if(st.registered){
       document.getElementById('register-card').classList.add('hidden');
       document.getElementById('status-card').classList.remove('hidden');
-      document.getElementById('who').textContent = st.name + (st.school? ' · '+st.school : '');
-      document.getElementById('state').textContent = (st.state||'—').toUpperCase();
-      document.getElementById('score').textContent = st.score ?? 0;
-      document.getElementById('timer').textContent = fmt(st.remaining_sec);
+      document.getElementById('who').textContent=st.name+(st.school?' · '+st.school:'');
+      document.getElementById('state').textContent=STATE_LABEL[st.state]||(st.state||'—').toUpperCase();
+      document.getElementById('score').textContent=st.score??0;
+      const t=document.getElementById('timer'); t.textContent=fmt(st.remaining_sec);
+      t.style.color=(st.remaining_sec!=null&&st.remaining_sec<60)?'var(--danger)':'var(--fg)';
     }
-    if(st.checks && st.checks.length){
+    if(st.checks&&st.checks.length){
       document.getElementById('checks-card').classList.remove('hidden');
-      document.getElementById('checks').innerHTML = st.checks.map(c=>{
-        const icon = c.passed ? '<span class="ok">✔ Selesai</span>'
-                              : '<span class="warnc">◻ Belum</span>';
-        const hint = (!c.passed && c.hint) ? `<div class="hint">${c.hint}</div>` : '';
-        return `<div class="row"><div><div>${c.title||c.code}</div>${hint}</div><div>${icon} <span class="pill">+${c.points}</span></div></div>`;
+      document.getElementById('checks').innerHTML=st.checks.map(c=>{
+        const icon=c.passed?'<span class="ok">✔ Selesai</span>':'<span class="warnc">◻ Belum</span>';
+        const hint=(!c.passed&&c.hint)?`<div class="hint">${c.hint}</div>`:'';
+        return `<div class="row"><div><div class="chk-title">${c.title||c.code}</div>${hint}</div>
+          <div style="text-align:right;white-space:nowrap">${icon} <span class="pill">+${c.points}</span></div></div>`;
       }).join('');
     }
-  }catch(e){ /* agent mungkin sibuk */ }
+  }catch(e){}
 }
-setInterval(poll, 2000); poll();
+setInterval(poll,2000); poll();
 </script>
 </body>
 </html>

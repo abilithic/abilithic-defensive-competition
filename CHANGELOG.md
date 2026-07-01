@@ -4,6 +4,16 @@ Semua perubahan penting dicatat di sini. Format: [Keep a Changelog](https://keep
 versi mengikuti [SemVer](https://semver.org) (TDD §24).
 
 ## [Unreleased]
+### Added (v0.2 — dalam progres)
+- **Web console pro**: login persisten (sesi cookie httpOnly), kelola event
+  (hapus/arsip sesi), kelola peserta (daftar, diskualifikasi, hapus), redesain UI
+  (branding, badge status, medali, toast, loading/empty state).
+- **Agent kiosk**: `kiosk.py` menampilkan agent sebagai aplikasi fullscreen
+  (pywebview + fallback browser-kiosk), autostart `.desktop`, `install-kiosk.sh`,
+  UI lokal dipoles. Peserta zero-setup: boot VM → app muncul otomatis.
+
+### Changed
+- Admin auth pindah dari header password ke sesi cookie (lib/auth.ts).
 
 ## [0.1.0] — 2026-06-30
 ### Added

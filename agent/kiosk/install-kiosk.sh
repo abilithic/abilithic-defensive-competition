@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# =====================================================================
+# abilithic DHC — Pasang mode KIOSK di VM peserta.
+# Setelah ini: VM boot -> aplikasi DHC muncul fullscreen otomatis.
+# Jalankan dari folder repo:  sudo bash agent/kiosk/install-kiosk.sh
+# =====================================================================
+set -euo pipefail
+if [[ $EUID -ne 0 ]]; then echo "Jalankan dengan sudo."; exit 1; fi
+
+# user desktop yang sebenarnya (bukan root)
+TARGET_USER="${SUDO_USER:-$(logname 2>/dev/null || echo "")}"
+if [[ -z "$TARGET_USER" ]]; then echo "Tidak bisa deteksi user desktop. Set TARGET_USER manual."; exit 1; fi
+USER_HOME="$(getent passwd "$TARGET_USER" | cut -d: -f6)"
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+
+echo "[1/5] Install dependency Python..."
+apt-get update -y >/dev/null 2>&1 || true
+apt-get install -y python3-flask python3-requests python3-yaml >/dev/null 2>&1 || \
+  pip3 install -r "$REPO_DIR/agent/requirements.txt" --break-system-packages || true
+
+echo "[2/5] (opsional) Coba pasang pywebview untuk jendela native..."
+# Tidak wajib — kalau gagal, kiosk pakai browser mode. Jangan hentikan skrip.
+apt-get install -y python3-gi gir1.2-webkit2-4.1 >/dev/null 2>&1 || true
+pip3 install pywebview --break-system-packages >/dev/null 2>&1 || true
+
+echo "[3/5] Salin agent ke /opt/abilithic-agent..."
+mkdir -p /opt/abilithic-agent
+cp -r "$REPO_DIR/agent/." /opt/abilithic-agent/
+# pastikan ada config.yaml (kalau belum, dari contoh — INGAT set portal_url!)
+if [[ ! -f /opt/abilithic-agent/config.yaml ]]; then
+  cp /opt/abilithic-agent/config.example.yaml /opt/abilithic-agent/config.yaml
+  echo "    !! Belum ada config.yaml -> dibuat dari contoh. EDIT portal_url:"
+  echo "       sudo nano /opt/abilithic-agent/config.yaml"
+fi
+chmod +x /opt/abilithic-agent/kiosk.py /opt/abilithic-agent/main.py 2>/dev/null || true
+
+echo "[4/5] Pasang autostart untuk user $TARGET_USER..."
+install -d -o "$TARGET_USER" -g "$TARGET_USER" "$USER_HOME/.config/autostart"
+cp "$REPO_DIR/agent/kiosk/abilithic-dhc.desktop" "$USER_HOME/.config/autostart/"
+chown "$TARGET_USER:$TARGET_USER" "$USER_HOME/.config/autostart/abilithic-dhc.desktop"
+
+echo "[5/5] Selesai."
+cat <<EOF
+
+============================================================
+ KIOSK TERPASANG.
+ - Aplikasi DHC akan muncul otomatis saat login desktop.
+ - Uji sekarang tanpa reboot:
+     python3 /opt/abilithic-agent/kiosk.py
+ - Pastikan config sudah benar (portal_url ke URL Vercel):
+     sudo nano /opt/abilithic-agent/config.yaml
+ - Jangan lupa tanam celah sebelum lomba:
+     sudo bash "$REPO_DIR/image/build/provision.sh"
+
+ (Opsional) Auto-login desktop tanpa ketik password:
+   sudo nano /etc/gdm3/custom.conf   -> pada [daemon] tambahkan:
+     AutomaticLoginEnable=true
+     AutomaticLogin=$TARGET_USER
+============================================================
+EOF
