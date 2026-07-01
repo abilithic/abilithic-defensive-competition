@@ -37,5 +37,11 @@ export async function POST(req: NextRequest) {
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json({ ok: true });
   }
+  if (body.action === "requalify") {
+    // batalkan diskualifikasi (mis. tidak sengaja ter-klik) -> kembali online
+    const { error } = await db.from("participants").update({ status: "online" }).eq("id", pid);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ ok: true });
+  }
   return NextResponse.json({ error: "action tidak dikenal" }, { status: 400 });
 }

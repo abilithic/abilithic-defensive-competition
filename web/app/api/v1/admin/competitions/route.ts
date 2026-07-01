@@ -47,13 +47,18 @@ export async function POST(req: NextRequest) {
       .select("hint_policy,penalty_weight,default_duration_sec")
       .eq("key", difficulty)
       .maybeSingle();
+    // durasi custom (menit) opsional; kalau kosong pakai default per tingkat
+    const mins = Number(body.duration_minutes);
+    const durationSec = Number.isFinite(mins) && mins > 0
+      ? Math.round(mins * 60)
+      : (diff?.default_duration_sec ?? 5400);
     const { data: comp, error } = await db
       .from("competitions")
       .insert({
         name: (body.name || "Lomba DHC").trim(),
         difficulty,
         status: "waiting",
-        duration_sec: diff?.default_duration_sec ?? 5400,
+        duration_sec: durationSec,
         hint_policy: diff?.hint_policy ?? "full",
         penalty_weight: diff?.penalty_weight ?? 1.0,
         session_code: genCode(),

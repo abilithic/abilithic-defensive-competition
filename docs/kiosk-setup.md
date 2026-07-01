@@ -1,8 +1,21 @@
 # Mode Kiosk — Agent jadi "Aplikasi" (v0.2)
 
-Tujuan: peserta **tidak** perlu buka terminal/browser/localhost. VM dinyalakan →
-**aplikasi abilithic DHC muncul fullscreen otomatis** → isi Nama + Kode Sesi →
+Tujuan: peserta **tidak** perlu buka browser/localhost manual. VM dinyalakan →
+**aplikasi abilithic DHC muncul otomatis sebagai jendela panel** → isi Nama + Kode Sesi →
 setelah START jadi **live dashboard** (skor, timer, checklist, hint).
+
+> **PENTING (companion window, bukan kunci layar):** aplikasi muncul sebagai
+> **jendela panel ramping**, BUKAN fullscreen yang mengunci. Peserta tetap bisa
+> membuka **Terminal** dan bekerja (hardening) sambil melihat skornya naik di panel.
+> Ini disengaja — lomba hardening butuh akses terminal & editor.
+
+## Cara peserta mengerjakan
+1. Boot VM → panel **abilithic DHC** muncul → isi Nama + Kode Sesi → **Daftar**.
+2. Tunggu panitia **START**. Panel berubah jadi dashboard (skor, timer, checklist).
+3. Buka **Terminal** (Activities → ketik "Terminal") **di samping** panel.
+4. Perbaiki tiap tugas di checklist lewat terminal/editor. Skor naik otomatis di panel
+   dalam beberapa detik. Hint tampil untuk tugas yang belum selesai.
+5. Saat waktu habis, skor dibekukan.
 
 ## Cara kerja
 `kiosk.py` menjalankan agent di latar, menunggu UI lokal siap, lalu menampilkannya

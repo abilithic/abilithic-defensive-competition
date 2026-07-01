@@ -12,8 +12,17 @@ versi mengikuti [SemVer](https://semver.org) (TDD §24).
   (pywebview + fallback browser-kiosk), autostart `.desktop`, `install-kiosk.sh`,
   UI lokal dipoles. Peserta zero-setup: boot VM → app muncul otomatis.
 
+- **15 check** (dari 5): +passwd_perm, empty_password_removed, uid0_unique,
+  ip_forward_disabled, password_max_days, ssh_permitempty_disabled,
+  world_writable_removed, suid_bash_removed, rogue_sudo_removed, cron_backdoor_removed.
+- **Tingkat berbeda nyata**: Easy 6 soal · Medium 11 · Hard 15 (subset di seed).
+- **Custom timer** saat buat sesi (menit), default per tingkat.
+- **Batalkan diskualifikasi** (requalify) di admin.
+- Kiosk jadi **jendela companion** (bukan fullscreen-lock) agar peserta bisa pakai terminal.
+
 ### Changed
 - Admin auth pindah dari header password ke sesi cookie (lib/auth.ts).
+- `provision.sh` menanam **15 celah**; seed pakai UPSERT (aman dijalankan ulang).
 
 ## [0.1.0] — 2026-06-30
 ### Added

@@ -2,11 +2,12 @@
 """abilithic DHC — Kiosk launcher.
 
 Menjalankan agent (main.py) di latar, menunggu UI lokal siap, lalu membuka
-UI itu sebagai **aplikasi fullscreen** — tanpa peserta perlu buka terminal/browser.
+UI itu sebagai **jendela aplikasi companion** (BUKAN fullscreen-lock), supaya
+peserta tetap bisa membuka Terminal & bekerja (hardening) sambil melihat skor.
 
 Urutan mode tampilan (pakai yang pertama tersedia):
-  1) pywebview  -> jendela native app (paling "aplikasi", tanpa browser chrome)
-  2) firefox --kiosk / chromium --app --kiosk / chrome --kiosk (fallback andal)
+  1) pywebview  -> jendela native app (tanpa browser chrome)
+  2) chromium/chrome --app / firefox --new-window (fallback andal)
 
 Jalankan: python3 kiosk.py   (biasanya dipanggil otomatis oleh autostart)
 """
@@ -59,13 +60,14 @@ def stop_agent():
 
 
 def open_pywebview():
-    """Mode paling 'aplikasi'. Return True bila berhasil dibuka."""
+    """Jendela aplikasi companion. Return True bila berhasil dibuka."""
     try:
         import webview  # pywebview
     except Exception:
         return False
     try:
-        webview.create_window("abilithic DHC", URL, fullscreen=True,
+        webview.create_window("abilithic DHC", URL,
+                              width=460, height=880, resizable=True,
                               background_color="#0a0e1a")
         webview.start()
         return True
@@ -75,24 +77,22 @@ def open_pywebview():
 
 
 def open_browser_kiosk():
-    """Fallback: buka browser terpasang dalam mode kiosk/fullscreen."""
+    """Fallback: buka browser terpasang sebagai jendela app (bukan kiosk-lock)."""
     candidates = [
-        ["firefox", "--kiosk", URL],
-        ["chromium-browser", f"--app={URL}", "--kiosk", "--start-fullscreen", "--no-first-run"],
-        ["chromium", f"--app={URL}", "--kiosk", "--start-fullscreen", "--no-first-run"],
-        ["google-chrome", f"--app={URL}", "--kiosk", "--no-first-run"],
-        ["google-chrome-stable", f"--app={URL}", "--kiosk", "--no-first-run"],
+        ["chromium-browser", f"--app={URL}", "--window-size=460,880", "--no-first-run"],
+        ["chromium", f"--app={URL}", "--window-size=460,880", "--no-first-run"],
+        ["google-chrome", f"--app={URL}", "--window-size=460,880", "--no-first-run"],
+        ["google-chrome-stable", f"--app={URL}", "--window-size=460,880", "--no-first-run"],
+        ["firefox", "--new-window", URL],
     ]
     for cmd in candidates:
         if shutil.which(cmd[0]):
             print(f"[kiosk] membuka via {cmd[0]}", flush=True)
             proc = subprocess.Popen(cmd)
-            proc.wait()  # blok sampai browser ditutup
+            proc.wait()
             return True
-    # upaya terakhir
     if shutil.which("xdg-open"):
         subprocess.Popen(["xdg-open", URL])
-        # tetap hidup agar agent jalan
         while True:
             time.sleep(3600)
     return False
@@ -101,11 +101,8 @@ def open_browser_kiosk():
 def main():
     print("[kiosk] menjalankan agent...", flush=True)
     start_agent()
-
     if not wait_ui():
         print("[kiosk] UI lokal tidak siap. Cek koneksi/konfigurasi agent.", flush=True)
-
-    # tampilkan sebagai aplikasi
     if not open_pywebview():
         if not open_browser_kiosk():
             print("[kiosk] Tidak ada penampil tersedia. Buka manual: " + URL, flush=True)

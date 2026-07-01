@@ -11,6 +11,7 @@ type Part = {
 };
 
 const DIFF_LABEL: Record<string, string> = { easy: "Mudah", medium: "Medium", hard: "Hard" };
+const DIFF_DEFAULT_MIN: Record<string, number> = { easy: 120, medium: 90, hard: 60 };
 
 export default function Admin() {
   const [authed, setAuthed] = useState<boolean | null>(null);
@@ -18,6 +19,7 @@ export default function Admin() {
   const [comps, setComps] = useState<Comp[]>([]);
   const [name, setName] = useState("Lomba DHC #1");
   const [difficulty, setDifficulty] = useState("easy");
+  const [durationMin, setDurationMin] = useState(120);
   const [openId, setOpenId] = useState<string | null>(null);
   const [parts, setParts] = useState<Part[]>([]);
   const [toast, setToast] = useState<{ m: string; k: string } | null>(null);
@@ -66,6 +68,11 @@ export default function Admin() {
     if (!r.ok) { flash(j.error || "Gagal", "err"); return; }
     if (action === "create") flash(`Sesi dibuat: ${j.competition?.session_code}`);
     loadComps();
+  }
+
+  function onDifficultyChange(v: string) {
+    setDifficulty(v);
+    setDurationMin(DIFF_DEFAULT_MIN[v] ?? 90); // isi default; masih bisa diubah manual
   }
 
   async function toggleParts(id: string) {
@@ -133,18 +140,23 @@ export default function Admin() {
 
       <div className="card">
         <h3>Buat Sesi Baru</h3>
-        <div className="grid2">
-          <div><label>Nama lomba</label>
-            <input value={name} onChange={(e) => setName(e.target.value)} /></div>
+        <label>Nama lomba</label>
+        <input value={name} onChange={(e) => setName(e.target.value)} />
+        <div className="grid2" style={{ marginTop: 4 }}>
           <div><label>Tingkat kesulitan</label>
-            <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>
-              <option value="easy">Mudah (Easy)</option>
-              <option value="medium">Medium</option>
-              <option value="hard">Hard</option>
+            <select value={difficulty} onChange={(e) => onDifficultyChange(e.target.value)}>
+              <option value="easy">Mudah (Easy) · 6 soal</option>
+              <option value="medium">Medium · 11 soal</option>
+              <option value="hard">Hard · 15 soal</option>
             </select></div>
+          <div><label>Durasi pengerjaan (menit)</label>
+            <input type="number" min={1} value={durationMin}
+              onChange={(e) => setDurationMin(Number(e.target.value))} />
+            <div className="small muted" style={{ marginTop: 4 }}>Default {DIFF_DEFAULT_MIN[difficulty]} mnt — bisa diubah.</div>
+          </div>
         </div>
         <div className="actions" style={{ marginTop: 14 }}>
-          <button onClick={() => comp("create")} disabled={busy}>+ Buat Sesi</button>
+          <button onClick={() => comp("create", undefined, { duration_minutes: durationMin })} disabled={busy}>+ Buat Sesi</button>
         </div>
       </div>
 
@@ -160,6 +172,7 @@ export default function Admin() {
                   <span className={"badge " + c.status}>{c.status}</span>
                   <span>Tingkat {DIFF_LABEL[c.difficulty] ?? c.difficulty}</span>·
                   <span>Kode <span className="code">{c.session_code}</span></span>·
+                  <span>{Math.round((c.duration_sec ?? 0) / 60)} mnt</span>·
                   <span>{c.participant_count} peserta</span>
                 </div>
               </div>
@@ -192,7 +205,11 @@ export default function Admin() {
                           <td><span className={"badge " + (p.status === "online" ? "running" : p.status === "disqualified" ? "archived" : "paused")}>{p.status}</span></td>
                           <td style={{ textAlign: "right" }}>
                             <div className="actions" style={{ justifyContent: "flex-end" }}>
-                              <button className="ghost sm" onClick={() => partAction("disqualify", p.id)} disabled={p.status === "disqualified"}>DQ</button>
+                              {p.status === "disqualified" ? (
+                                <button className="ok sm" onClick={() => partAction("requalify", p.id)}>Batalkan DQ</button>
+                              ) : (
+                                <button className="warn sm" onClick={() => partAction("disqualify", p.id)}>DQ</button>
+                              )}
                               <button className="danger sm" onClick={() => partAction("remove", p.id)}>Hapus</button>
                             </div>
                           </td>
