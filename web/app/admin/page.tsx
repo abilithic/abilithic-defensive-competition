@@ -17,7 +17,7 @@ export default function Admin() {
   const [authed, setAuthed] = useState<boolean | null>(null);
   const [pw, setPw] = useState("");
   const [comps, setComps] = useState<Comp[]>([]);
-  const [name, setName] = useState("Lomba DHC #1");
+  const [name, setName] = useState("Defense Hardening Competition #1");
   const [difficulty, setDifficulty] = useState("easy");
   const [durationMin, setDurationMin] = useState(120);
   const [openId, setOpenId] = useState<string | null>(null);
@@ -115,7 +115,7 @@ export default function Admin() {
   // ---------- render ----------
   const Brand = (
     <div className="brand">
-      <div className="logo">◈</div>
+      <div className="logo"><img src="/abilithic-icon-256.png" alt="abilithic" /></div>
       <div><h1>abilithic DHC · Admin</h1><div className="sub">Kelola lomba & peserta</div></div>
     </div>
   );

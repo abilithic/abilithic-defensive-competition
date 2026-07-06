@@ -4,6 +4,14 @@ Semua perubahan penting dicatat di sini. Format: [Keep a Changelog](https://keep
 versi mengikuti [SemVer](https://semver.org) (TDD §24).
 
 ## [Unreleased]
+### Changed
+- **Branding di web portal**: logo placeholder (`◈`) di leaderboard & admin
+  console diganti dengan logo abilithic sungguhan (`web/public/abilithic-icon-256.png`,
+  disalin dari `assets/abilithic-icon-256.png`), juga dipakai sebagai favicon
+  (`web/app/layout.tsx`). Nama sesi default saat buat lomba baru diubah dari
+  "Lomba DHC #1" menjadi "Defense Hardening Competition #1"
+  (`web/app/admin/page.tsx`).
+
 ### Fixed
 - **Akar masalah "poin/timestamp tidak update otomatis"**: agent kini
   menyinkronkan jam ke server (`GET /api/v1/time`, tanpa signing) sebelum

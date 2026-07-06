@@ -60,7 +60,7 @@ export default function Leaderboard() {
     <div className="wrap">
       <div className="topbar">
         <div className="brand">
-          <div className="logo">◈</div>
+          <div className="logo"><img src="/abilithic-icon-256.png" alt="abilithic" /></div>
           <div><h1>abilithic DHC</h1><div className="sub">Defend · Harden · Compete</div></div>
         </div>
         <a href="/admin" className="badge">Panitia</a>
