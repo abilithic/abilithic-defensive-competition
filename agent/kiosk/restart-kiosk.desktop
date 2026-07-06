@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Restart abilithic DHC
+Comment=Buka ulang jendela kiosk abilithic DHC secara manual (kalau macet/tertutup)
+Exec=/usr/bin/bash /opt/abilithic-agent/kiosk/restart-kiosk.sh
+Icon=/opt/abilithic-agent/kiosk/abilithic-icon.png
+Terminal=false
+Categories=Education;

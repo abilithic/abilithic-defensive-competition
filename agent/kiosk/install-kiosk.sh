@@ -13,17 +13,17 @@ if [[ -z "$TARGET_USER" ]]; then echo "Tidak bisa deteksi user desktop. Set TARG
 USER_HOME="$(getent passwd "$TARGET_USER" | cut -d: -f6)"
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
-echo "[1/5] Install dependency Python..."
+echo "[1/6] Install dependency Python..."
 apt-get update -y >/dev/null 2>&1 || true
 apt-get install -y python3-flask python3-requests python3-yaml >/dev/null 2>&1 || \
   pip3 install -r "$REPO_DIR/agent/requirements.txt" --break-system-packages || true
 
-echo "[2/5] (opsional) Coba pasang pywebview untuk jendela native..."
+echo "[2/6] (opsional) Coba pasang pywebview untuk jendela native..."
 # Tidak wajib — kalau gagal, kiosk pakai browser mode. Jangan hentikan skrip.
 apt-get install -y python3-gi gir1.2-webkit2-4.1 >/dev/null 2>&1 || true
 pip3 install pywebview --break-system-packages >/dev/null 2>&1 || true
 
-echo "[3/5] Salin agent ke /opt/abilithic-agent..."
+echo "[3/6] Salin agent ke /opt/abilithic-agent..."
 mkdir -p /opt/abilithic-agent
 cp -r "$REPO_DIR/agent/." /opt/abilithic-agent/
 # pastikan ada config.yaml (kalau belum, dari contoh — INGAT set portal_url!)
@@ -33,18 +33,33 @@ if [[ ! -f /opt/abilithic-agent/config.yaml ]]; then
   echo "       sudo nano /opt/abilithic-agent/config.yaml"
 fi
 chmod +x /opt/abilithic-agent/kiosk.py /opt/abilithic-agent/main.py 2>/dev/null || true
+chmod +x /opt/abilithic-agent/kiosk/restart-kiosk.sh 2>/dev/null || true
 
-echo "[4/5] Pasang autostart untuk user $TARGET_USER..."
+echo "[4/6] Pasang autostart untuk user $TARGET_USER..."
 install -d -o "$TARGET_USER" -g "$TARGET_USER" "$USER_HOME/.config/autostart"
 cp "$REPO_DIR/agent/kiosk/abilithic-dhc.desktop" "$USER_HOME/.config/autostart/"
 chown "$TARGET_USER:$TARGET_USER" "$USER_HOME/.config/autostart/abilithic-dhc.desktop"
 
-echo "[5/5] Selesai."
+echo "[5/6] Pasang shortcut restart manual di Desktop (fallback kalau window macet)..."
+install -d -o "$TARGET_USER" -g "$TARGET_USER" "$USER_HOME/Desktop"
+cp "$REPO_DIR/agent/kiosk/restart-kiosk.desktop" "$USER_HOME/Desktop/"
+chmod +x "$USER_HOME/Desktop/restart-kiosk.desktop"
+chown "$TARGET_USER:$TARGET_USER" "$USER_HOME/Desktop/restart-kiosk.desktop"
+# GNOME/Nautilus menandai .desktop di Desktop sebagai "untrusted" sampai
+# ditandai manual -- coba tandai otomatis lewat gio (kalau gagal, peserta/
+# panitia cukup klik kanan -> "Allow Launching" sekali saja).
+sudo -u "$TARGET_USER" gio set "$USER_HOME/Desktop/restart-kiosk.desktop" "metadata::trusted" "true" 2>/dev/null || true
+
+echo "[6/6] Selesai."
 cat <<EOF
 
 ============================================================
  KIOSK TERPASANG.
- - Aplikasi DHC akan muncul otomatis saat login desktop.
+ - Aplikasi DHC akan muncul otomatis saat login desktop, dan otomatis
+   membuka lagi sendiri kalau jendela tidak sengaja tertutup peserta.
+ - Kalau suatu saat window benar-benar macet/hilang, ada shortcut
+   "Restart abilithic DHC" di Desktop -- tinggal double-click, tidak
+   perlu buka terminal.
  - Uji sekarang tanpa reboot:
      python3 /opt/abilithic-agent/kiosk.py
  - Pastikan config sudah benar (portal_url ke URL Vercel):

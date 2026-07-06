@@ -5,6 +5,25 @@ versi mengikuti [SemVer](https://semver.org) (TDD §24).
 
 ## [Unreleased]
 ### Added
+- **Kiosk otomatis membuka lagi kalau jendelanya ditutup**: sebelumnya kalau
+  peserta tidak sengaja menutup window (klik close/Alt+F4), `kiosk.py`
+  langsung keluar dan peserta kehilangan akses sampai ada yang menjalankan
+  ulang manual. Sekarang `main()` (`agent/kiosk.py`) loop selamanya dan
+  membuka lagi window otomatis dalam ~2 detik. Sebagai fallback kalau proses
+  kiosk-nya sendiri ikut mati, ditambahkan shortcut Desktop **"Restart
+  abilithic DHC"** (`agent/kiosk/restart-kiosk.desktop` +
+  `restart-kiosk.sh`) yang tinggal di-double-click tanpa buka terminal.
+- **Icon abilithic dipakai konsisten di kiosk**: logo placeholder (`◈`) di
+  UI kiosk lokal (`agent/ui/templates/index.html`) diganti gambar asli
+  (disajikan lewat route static Flask baru, `agent/ui/static/`), dan ikon
+  window/taskbar kiosk (`agent/kiosk/abilithic-dhc.desktop`, shortcut
+  restart) diarahkan ke ikon yang sama alih-alih ikon generik
+  `utilities-terminal`.
+- **Panduan troubleshooting VM** ditambahkan di README (ringkas, EN) dan
+  `docs/DEPLOYMENT-GUIDE.md` (lengkap, ID): alur run awal, cara update kode
+  di VM yang benar (termasuk resync wajib ke `/opt/abilithic-agent/` yang
+  sebelumnya sering terlewat), penanganan window kiosk tertutup, dan
+  kumpulan command diagnostik umum.
 - **Transparansi skor di leaderboard publik**: baris/skor peserta kini bisa
   diklik untuk membuka rincian per-soal (judul + status lulus/belum, plus
   ringkasan "X / Y soal selesai") — sebelumnya leaderboard cuma menampilkan
@@ -146,23 +165,4 @@ versi mengikuti [SemVer](https://semver.org) (TDD §24).
   - `PANDUAN-SETUP-v0.1.md` (root) → `docs/DEPLOYMENT-GUIDE.md`, disunting agar
     tak lagi menyebut "v0.1"/"5 celah" (sudah 15 celah & 3 tingkat sejak v0.2).
   - Root repo kini hanya berisi file governance standar GitHub (README, LICENSE,
-    CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, DISCLAIMER, CHANGELOG); seluruh
-    dokumen teknis/naratif panjang ada di `docs/`.
-
-## [0.1.0] — 2026-06-30
-### Added
-- **Database**: schema Postgres (competitions, participants, checks, difficulties,
-  participant_checks, scores, snapshots, event_logs, nonces) + view `leaderboard`.
-- **Seed**: preset tingkat Easy/Medium/Hard + 5 check Linux dasar
-  (ssh_root_disabled, ufw_enabled, telnet_disabled, rogue_user_removed, shadow_perm).
-- **Agent (Python)**: arsitektur modular — state_manager, score_engine (pure fn),
-  check_runner, network client + retry/backoff + store-and-forward, snapshot manager,
-  crypto HMAC signing, logger terstruktur, local UI (localhost:8080).
-- **Web (Next.js)**: API `/v1` (register, state, score, heartbeat, snapshot, admin),
-  leaderboard realtime (Supabase Realtime), halaman admin START/PAUSE/STOP.
-- **Baseline & Evidence**: snapshot registration/start/stop + eligibility anti pre-fix.
-- **Governance**: README, LICENSE (MIT), CONTRIBUTING, SECURITY, CODE_OF_CONDUCT, ADR-001..006.
-- **CI**: GitHub Actions (lint + unit test scoring).
-
-[Unreleased]: https://github.com/abilithic/abilithic-defensive-competition/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/abilithic/abilithic-defensive-competition/releases/tag/v0.1.0
+    CONTRIBUTING, CODE_OF_COND

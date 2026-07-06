@@ -14,8 +14,9 @@
         radial-gradient(700px 400px at -10% 0%,rgba(47,214,127,.09),transparent);}
     .wrap{max-width:760px;margin:0 auto;padding:36px 22px;min-height:100%}
     .brand{display:flex;align-items:center;gap:12px;margin-bottom:26px}
-    .logo{width:44px;height:44px;border-radius:11px;background:linear-gradient(135deg,var(--acc),#6ee7b7);
-      display:grid;place-items:center;font-weight:900;color:#071022;font-size:20px}
+    .logo{width:44px;height:44px;border-radius:11px;overflow:hidden;
+      display:grid;place-items:center;box-shadow:0 0 0 1px rgba(255,255,255,.06) inset}
+    .logo img{width:100%;height:100%;object-fit:cover;display:block}
     .brand h1{margin:0;font-size:22px;font-weight:800}
     .brand .sub{color:var(--mut);font-size:13px}
     .card{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);
@@ -65,7 +66,7 @@
 <body>
 <div class="wrap">
   <div class="brand">
-    <div class="logo">◈</div>
+    <div class="logo"><img src="/static/abilithic-icon.png" alt="abilithic"></div>
     <div><h1>abilithic DHC</h1><div class="sub">Defend · Harden · Compete</div></div>
   </div>
 
@@ -188,10 +189,4 @@ async function poll(){
     }
   }catch(e){
     document.getElementById('dot').className='dot err';
-    document.getElementById('conn-text').textContent='Agent tidak merespons';
-  }
-}
-setInterval(poll,2000); poll();
-</script>
-</body>
-</html>
+    document.getElementById('conn-text').textContent='Ag

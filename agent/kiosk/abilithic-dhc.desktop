@@ -3,8 +3,7 @@ Type=Application
 Name=abilithic DHC
 Comment=Defensive Hardening Competition
 Exec=/usr/bin/python3 /opt/abilithic-agent/kiosk.py
-Icon=utilities-terminal
+Icon=/opt/abilithic-agent/kiosk/abilithic-icon.png
 Terminal=false
 X-GNOME-Autostart-enabled=true
-X-GNOME-Autostart-Delay=5
-Categories=Education;
+X-GNOME-Autostart-Del

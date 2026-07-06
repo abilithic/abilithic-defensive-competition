@@ -303,34 +303,44 @@ Kalau semua ini berhasil, **v0.1 kamu resmi jalan end-to-end.** 🚀
 
 # 🧯 Troubleshooting
 
-| Gejala | Solusi |
-|---|---|
-| `localhost:9090` tak terbuka di VM | Pastikan terminal `sudo python3 main.py` masih jalan tanpa error. |
-| Registrasi: "kode sesi tidak ditemukan" | Pastikan sesi sudah dibuat di /admin & kode diketik benar (huruf besar). |
-| Registrasi gagal / timeout | Cek `portal_url` di `config.yaml` = URL Vercel yang benar (pakai `https://`). Cek VM ada internet (`ping google.com`). |
-| Skor tidak naik | Perbaikan mungkin belum sesuai — lihat hint di `localhost:9090`. Pastikan status **RUNNING**. |
-| Leaderboard tak update | Tunggu ~4 detik (mode polling) atau aktifkan Realtime (2.4). Refresh halaman. |
-| Admin "Password salah" | `ADMIN_PASSWORD` di Vercel ≠ yang kamu ketik. Cek Environment Variables di Vercel → Redeploy bila baru diubah. |
-| Error 401 di agent | `AGENT_HMAC_SECRET` di Vercel berubah setelah peserta daftar. Daftar ulang peserta. |
-| `pip3 install` error "externally managed" | Tambahkan `--break-system-packages`. |
-| VMware minta lisensi | Pilih opsi **Personal Use (free)**, tanpa kunci. |
-| Ubuntu berat/lemot | Naikkan RAM VM ke 4–6 GB, Processors ke 2–4 (VM Settings). |
+## Cara Run — Ringkasan Cepat
 
----
+### CARA RUN AWAL (VM baru/template baru saja di-clone)
+```bash
+# Hapus history terminal (VM clone jangan bocorkan command user sebelumnya)
+cat /dev/null > ~/.bash_history && history -c && history -w
 
-# 📦 (Opsional) Setelah berhasil: buat OVA untuk peserta
+# Build soal (tanam 15 celah keamanan) di VM
+cd ~/abilithic-defensive-competition
+git pull
+sudo bash image/build/provision.sh
+```
 
-Untuk lomba nyata, kamu bekukan VM ini menjadi 1 image yang dibagikan ke semua peserta:
-1. Di VM, pastikan agent ter-install sebagai **service** (5.6 opsional) & `provision.sh` sudah dijalankan.
-2. Matikan VM. Di VMware: **File → Export to OVF/OVA**.
-3. Hitung checksum untuk verifikasi peserta:
-   ```powershell
-   certutil -hashfile abilithic-dhc-2026.04.ova SHA256
-   ```
-4. Unggah OVA + checksum ke **GitHub Releases** atau Google Drive → bagikan link.
-   (Lihat `image/README.md`.)
+### Update kode GitHub di VM yang SUDAH terpasang kiosk-nya
+Ini bagian yang paling sering kelewat: kiosk/agent yang benar-benar jalan
+saat boot itu **salinan terpisah** di `/opt/abilithic-agent/` (disalin oleh
+`install-kiosk.sh` sekali saat instalasi awal) — **bukan** langsung dari
+folder git ini. `git pull` saja **tidak cukup**, harus disusul resync ke `/opt`:
+```bash
+cd ~/abilithic-defensive-competition
+git pull
+sudo bash agent/kiosk/install-kiosk.sh    # resync kode ke /opt + pasang ulang shortcut/icon
+sudo systemctl restart abilithic-agent    # restart service agent (systemd)
 
----
+# uji tanpa reboot dulu:
+sudo pkill -f kiosk.py 2>/dev/null
+python3 /opt/abilithic-agent/kiosk.py     # Ctrl+C untuk berhenti setelah yakin OK
 
-**Ada kendala di langkah tertentu?** Buka [issue](../../issues) baru dan sertakan
-nomor langkah + pesan error yang muncul.
+# baru reboot VM untuk pastikan autostart-nya juga ambil kode baru
+```
+> Verifikasi cepat apakah `/opt` sudah sinkron dengan repo:
+> `diff ~/abilithic-defensive-competition/agent/kiosk.py /opt/abilithic-agent/kiosk.py`
+> — kosong/tidak ada output berarti sudah sama persis.
+
+### Kalau window kiosk tidak sengaja tertutup peserta
+Sejak v0.3, `kiosk.py` **otomatis membuka lagi jendelanya sendiri** dalam
+~2 detik kalau tertutup (baik ke-klik close, Alt+F4, dsb.) — peserta atau
+panitia **tidak perlu melakukan apa pun**. Kalau suatu saat window tetap
+tidak muncul lagi (kasus langka: proses kiosk.py ikut mati, bukan cuma
+window-nya), ada dua fallback:
+- **Peserta:** double-click shortcut **"Restart abilithic DHC"** d

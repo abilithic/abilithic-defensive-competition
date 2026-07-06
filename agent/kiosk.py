@@ -173,6 +173,14 @@ def open_browser_kiosk():
     return False
 
 
+def _pywebview_available():
+    try:
+        import webview  # noqa: F401
+        return True
+    except Exception:
+        return False
+
+
 def main():
     print("[kiosk] menjalankan agent...", flush=True)
     start_agent()
@@ -182,8 +190,23 @@ def main():
     # Menunggu di sini dulu hanya akan menunda window muncul tanpa manfaat,
     # dan justru inilah pola lama yang bisa membuat kiosk "terlihat blank"
     # kalau wait_ui() sempat timeout sebelum window dibuka sama sekali.
-    if open_pywebview():
-        return
+    if _pywebview_available():
+        # Loop selamanya: open_pywebview() BLOCKING sampai window ditutup
+        # (baik sengaja lewat tombol close/Alt+F4 peserta, maupun error).
+        # Kalau peserta tidak sengaja menutup jendela, window otomatis
+        # dibuka lagi dalam beberapa detik -- tidak perlu panitia/peserta
+        # menjalankan apa pun secara manual. Hanya keluar dari loop kalau
+        # open_pywebview() gagal TOTAL (pywebview/WebKit rusak), baru jatuh
+        # ke fallback browser di bawah.
+        while True:
+            if not open_pywebview():
+                print("[kiosk] pywebview gagal dibuka -- beralih ke mode browser.",
+                      flush=True)
+                break
+            print("[kiosk] Window kiosk ditutup -- membuka lagi otomatis dalam 2 "
+                  "detik (supaya peserta tidak kehilangan akses walau jendela "
+                  "tidak sengaja tertutup)...", flush=True)
+            time.sleep(2)
     # Fallback ke browser: tidak ada halaman loading kustom, jadi tunggu UI
     # dulu di sini supaya browser tidak membuka halaman connection-error.
     if not wait_ui():

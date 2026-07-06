@@ -21,7 +21,7 @@ Free and open source, self-hosted on Vercel + Supabase.
 
 <img src="assets/abilithic-horizontal-1200.png" alt="abilithic DHC" width="520"/>
 
-[⬇️ Quickstart](#-quickstart) · [✨ Features](#-key-features) · [⚙️ How it works](#️-how-it-works) · [📖 Technical Design](docs/TECHNICAL-DESIGN.md) · [⚠️ Disclaimer](DISCLAIMER.md)
+[⬇️ Quickstart](#-quickstart) · [✨ Features](#-key-features) · [⚙️ How it works](#️-how-it-works) · [📖 Technical Design](docs/TECHNICAL-DESIGN.md) · [🧯 Troubleshooting](#-troubleshooting-organizer--participant-vm) · [⚠️ Disclaimer](DISCLAIMER.md)
 
 </div>
 
@@ -178,32 +178,27 @@ Found a vulnerability in the platform itself (not one of the intentionally
 planted training vulnerabilities)? Report it via [SECURITY.md](SECURITY.md) —
 please don't open a public issue.
 
-## ⚠️ Disclaimer
+## 🧯 Troubleshooting (Organizer / Participant VM)
 
-This platform intentionally plants security vulnerabilities into VMs for
-training purposes. **Isolated/air-gapped competition networks only** — see
-[DISCLAIMER.md](DISCLAIMER.md) before deploying.
+Quick reference for the two operations organizers run most often on a
+participant VM. Full step-by-step (Bahasa Indonesia) lives in
+[`docs/DEPLOYMENT-GUIDE.md`](docs/DEPLOYMENT-GUIDE.md#-troubleshooting).
 
-## 📄 License
+**First run on a fresh VM clone:**
+```bash
+# clear shell history first — a cloned VM shouldn't leak the previous user's commands
+cat /dev/null > ~/.bash_history && history -c && history -w
 
-[MIT](LICENSE) © 2026 abilithic.
+cd ~/abilithic-defensive-competition
+git pull
+sudo bash image/build/provision.sh   # plants the 15 intentional vulnerabilities
+```
 
----
-
-<!-- GitHub topics: cybersecurity, blue-team, ctf, cyberpatriot, defensive-security,
-system-hardening, linux-hardening, security-competition, nextjs, supabase, python,
-realtime, education, capture-the-flag-alternative -->
-
-<div align="center">
-
-### 👤 Developed by **Abil Khosim** — *Cybersecurity Specialist*
-
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Abil%20Khosim-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/abil-khosim-itsec/)
-
-*abilithic DHC* is an original project by Abil Khosim, part of the Abilithic
-family (Recon · Scan · DHC). Released under the MIT License — please keep
-this attribution when reusing or redistributing.
-
-<sub>Security, built like stone. 🛡️</sub>
-
-</div>
+**Pulling a code update onto an already-installed VM** — the kiosk/agent
+that actually runs at boot is a **separate copy** installed to
+`/opt/abilithic-agent/` by `install-kiosk.sh`, not the git checkout itself.
+`git pull` alone does **not** update what's running — you must resync:
+```bash
+cd ~/abilithic-defensive-competition
+git pull
+sudo bash a
