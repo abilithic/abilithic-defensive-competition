@@ -4,6 +4,22 @@ Semua perubahan penting dicatat di sini. Format: [Keep a Changelog](https://keep
 versi mengikuti [SemVer](https://semver.org) (TDD §24).
 
 ## [Unreleased]
+### Fixed
+- **Jendela kiosk blank setelah restart VM** (`agent/kiosk.py`), dua penyebab
+  sekaligus:
+  1. Bug WebKitGTK yang dikenal luas: renderer DMA-BUF-nya sering gagal total
+     di GPU virtual (VMware/VirtualBox/QEMU), menghasilkan jendela yang
+     terbuka tapi benar-benar blank. Diperbaiki dengan set
+     `WEBKIT_DISABLE_DMABUF_RENDERER=1` & `WEBKIT_DISABLE_COMPOSITING_MODE=1`
+     sebelum WebKit diinisialisasi.
+  2. Race condition: window sebelumnya memuat URL agent sekali saja tanpa
+     retry — kalau server Flask belum sempat nyala saat VM baru boot
+     (jaringan/servis masih "pemanasan"), window gagal memuat dan terlihat
+     kosong selamanya. Diperbaiki: window kini dibuka dengan halaman loading
+     lokal instan (tidak butuh server), lalu background thread menunggu UI
+     siap (timeout dinaikkan 40s -> 120s) baru mengalihkan window ke URL asli.
+     Kalau tetap gagal, tampil halaman error yang jelas (bukan blank).
+
 ### Changed
 - **Branding di web portal**: logo placeholder (`◈`) di leaderboard & admin
   console diganti dengan logo abilithic sungguhan (`web/public/abilithic-icon-256.png`,
