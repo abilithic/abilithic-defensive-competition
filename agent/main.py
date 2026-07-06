@@ -6,7 +6,7 @@ SnapshotManager, Logger, dan Local UI (Flask). Pola: agen POLLING ke server.
 
 Jalankan (di dalam VM Ubuntu, butuh root agar bisa baca /etc/shadow dll):
     sudo python3 main.py
-Lalu buka http://localhost:8080 untuk registrasi.
+Lalu buka http://localhost:9090 untuk registrasi.
 """
 import json
 import os
@@ -222,11 +222,11 @@ def main():
     # jalankan Local UI di thread terpisah
     ui_app = create_ui(rt)
     ui_thread = threading.Thread(
-        target=lambda: ui_app.run(host="127.0.0.1", port=cfg.get("local_ui_port", 8080),
+        target=lambda: ui_app.run(host="127.0.0.1", port=cfg.get("local_ui_port", 9090),
                                   debug=False, use_reloader=False),
         daemon=True)
     ui_thread.start()
-    log.info("local_ui_started", port=cfg.get("local_ui_port", 8080))
+    log.info("local_ui_started", port=cfg.get("local_ui_port", 9090))
 
     poll_interval = cfg.get("poll_interval_sec", 15)
 

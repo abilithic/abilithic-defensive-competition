@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 # =====================================================================
 # abilithic DHC — Jalankan agent dengan BERSIH.
-# Otomatis membunuh proses lama yang memegang port 8080 (biang "Address
+# Otomatis membunuh proses lama yang memegang port lokal (biang "Address
 # already in use" / dashboard tak update), lalu menjalankan agent baru.
+# Port default 9090 (BUKAN 8080) — sengaja dihindari agar tak bentrok dengan
+# proxy Burp Suite/OWASP ZAP yang lazim dijalankan di 8080 pada mesin
+# tester/panitia (lihat config.example.yaml).
 # Pakai:  sudo bash agent/run-agent.sh     (atau dari /opt: sudo bash /opt/abilithic-agent/run-agent.sh)
 # =====================================================================
 set -u
-PORT=8080
+PORT=9090
 
 PIDS=$(lsof -t -i:"$PORT" 2>/dev/null || true)
 if [ -n "$PIDS" ]; then

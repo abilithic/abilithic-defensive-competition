@@ -1,10 +1,10 @@
-# Review & Konsep v2 — abilithic DHC
+# Review & Concept v2 — abilithic DHC
 
 Review menyeluruh (hulu ke hilir) atas kondisi platform per 2026-07-06, akar
 masalah bug "poin/timestamp tidak update otomatis", dan konsep v0.3 untuk
 menyempurnakan seluruh aspek: agent, web, database, keamanan, UI/UX, dan
 presentasi GitHub. Dokumen ini melengkapi (bukan menggantikan)
-[`KONSEP-abilithic-defensive-competition.md`](KONSEP-abilithic-defensive-competition.md)
+[`TECHNICAL-DESIGN.md`](TECHNICAL-DESIGN.md)
 (TDD asli) — anggap ini sebagai lapisan "apa yang sudah berjalan, apa yang
 bolong, dan apa langkah berikutnya".
 
@@ -31,6 +31,8 @@ Bagian di bawah ini rinci per lapisan.
 | 8 | Tidak bilingual (ID/EN) seperti abilithic-recon & abilithic-scan | Audiens internasional tak terlayani | Direkomendasikan v0.3 (§4.6) |
 | 9 | Tidak ada export hasil lomba (CSV/PDF) dari admin console | Panitia harus query manual ke Supabase utk laporan akhir | Direkomendasikan v0.3 (§4.3) |
 | 10 | `computed_at_ms` & `taken_at_server_ms` sebelumnya memakai jam lokal VM (bukan cuma header signing) | Ranking tie-break & bukti forensik ikut salah bila jam VM ngaco | **Diperbaiki** (§2.1) |
+| 11 | Port lokal kiosk/agent default `8080` bentrok dengan proxy Burp Suite/OWASP ZAP di mesin tester | Tak bisa jalankan agent & Burp bersamaan di komputer yang sama | **Diperbaiki** (§6) |
+| 12 | File TDD asli (`KONSEP-abilithic-defensive-competition.md`) hidup di luar repo git, tak pernah ter-upload ke GitHub, dan README lama linknya patah (`../...`) | Dokumen desain utama tidak terlihat/hilang di GitHub | **Diperbaiki** (§6) |
 
 ---
 
@@ -224,9 +226,9 @@ sebagai langkah pertama — UI aplikasi itu sendiri belum.
 
 Dibandingkan dengan README `abilithic-recon` & `abilithic-scan` (dicek
 langsung dari GitHub org `abilithic`), README lama proyek ini punya struktur
-konten yang baik tapi kurang di preservationsi: tanpa badge, tanpa logo/banner,
-tanpa screenshot, tanpa footer atribusi "Developed by Abil Khosim". README
-sudah ditulis ulang (`README.md`) mengikuti pola yang sama:
+konten yang baik tapi kurang dipoles presentasinya: tanpa badge, tanpa
+logo/banner, tanpa screenshot, tanpa footer atribusi "Developed by Abil
+Khosim". README sudah ditulis ulang (`README.md`) mengikuti pola yang sama:
 
 - Header terpusat dengan logo + tagline + baris badge (License, Platform,
   Python, Next.js, Supabase, Build, LinkedIn).
@@ -251,25 +253,76 @@ file itu ada, README langsung menampilkannya tanpa edit lebih lanjut.
 
 ---
 
-## 6. Ringkasan Perubahan Kode pada Sesi Ini
+## 6. Sesi Kedua — Port, Kebersihan Repo & Penamaan File
+
+Perubahan lanjutan sesuai permintaan: port lokal, pembersihan file, dan
+struktur nama dokumen yang lebih profesional untuk GitHub.
+
+### 6.1 Port lokal: 8080 → 9090
+Kiosk/agent lokal (`localhost:8080`) diubah default ke **9090** di seluruh
+kode & dokumentasi (`agent/config.example.yaml`, `agent/kiosk.py`,
+`agent/main.py`, `agent/ui/server.py`, `agent/run-agent.sh`, README,
+`docs/setup-participant.md`, `docs/DEPLOYMENT-GUIDE.md`) — 8080 lazim dipakai
+proxy **Burp Suite / OWASP ZAP** di mesin tester/panitia, jadi dihindari agar
+tak bentrok saat menjalankan agent di komputer yang sama dengan alat itu.
+Entri **CHANGELOG historis** (v0.1/v0.2, yang menyebut 8080) sengaja **tidak**
+diubah — itu catatan sejarah rilis yang sudah terjadi, bukan dokumentasi
+perilaku saat ini.
+
+### 6.2 Kebersihan repo untuk upload GitHub
+Dicek `.gitignore` & `git ls-files`: **tidak ada** file build/cache
+(`__pycache__/`, `web/.next/`, `web/node_modules/`) yang ter-*track* — sudah
+bersih sejak awal, tidak ada yang perlu dihapus dari sisi git. Yang benar-benar
+"tidak penting"/tidak profesional ternyata bukan file sampah, melainkan
+**penamaan & lokasi dokumen**:
+
+- `KONSEP-abilithic-defensive-competition.md` (TDD asli, 1000+ baris) hidup
+  **di luar repo git** (satu folder di atas), sehingga **tidak pernah
+  ter-upload ke GitHub** — dan README lama/baru sempat mereferensikannya
+  dengan link yang salah. **Dipindahkan** (disalin, isi tidak diubah) ke
+  `docs/TECHNICAL-DESIGN.md` di dalam repo. File asli di luar repo **sengaja
+  dibiarkan ada** di komputer kamu — hapus sendiri kalau sudah yakin tidak
+  dibutuhkan lagi di luar repo.
+- `PANDUAN-SETUP-v0.1.md` (panduan deployment dari nol) dipindah ke
+  `docs/DEPLOYMENT-GUIDE.md`, judul & isinya disunting agar tak lagi menyebut
+  "v0.1"/"5 celah" (sudah 15 celah & 3 tingkat sejak v0.2), dan baris penutup
+  yang terlalu personal ("aku bantu urai...") diganti jadi arahan standar
+  (buka issue GitHub).
+- Dokumen review ini sendiri dipindah dari root (`REVIEW-DAN-KONSEP-v2.md`,
+  nama campur bahasa) ke `docs/REVIEW-AND-CONCEPT-v2.md` — konsisten dengan
+  `docs/V0.2-PLAN.md` dan bahasa Inggris yang dipakai README/badge.
+
+Struktur root repo sekarang lebih ramping: hanya file governance standar
+GitHub (`README`, `LICENSE`, `CONTRIBUTING`, `CODE_OF_CONDUCT`, `SECURITY`,
+`DISCLAIMER`, `CHANGELOG`) yang tersisa di root; semua dokumen teknis/naratif
+panjang ada di `docs/`.
+
+---
+
+## 7. Ringkasan Perubahan Kode (Kedua Sesi)
 
 | File | Perubahan |
 |---|---|
 | `web/app/api/v1/time/route.ts` | **Baru** — endpoint publik jam server |
 | `agent/crypto/signing.py` | `build_auth_headers` menerima `clock_offset_ms` |
 | `agent/network/client.py` | `ApiClient.sync_clock()` + offset dipakai di semua request signed |
-| `agent/main.py` | `Runtime._now_ms()`, dipakai untuk timer/skor/snapshot; `sync_once()` panggil `sync_clock()` lebih dulu |
+| `agent/main.py` | `Runtime._now_ms()`, dipakai untuk timer/skor/snapshot; `sync_once()` panggil `sync_clock()` lebih dulu; default port 9090 |
 | `agent/snapshot/manager.py` | `build(..., now_ms=...)` — snapshot pakai jam terkoreksi |
 | `tests/test_clock_skew.py` | **Baru** — 3 test regresi clock-skew |
 | `web/app/admin/page.tsx` | Auto-refresh sesi (5s) & peserta (4s); indikator "Auto-refresh" |
 | `web/app/page.tsx` | Skeleton loading, indikator "Live" |
 | `web/app/globals.css` | `.live-dot`/`.live-tag`, skeleton shimmer, micro-interaction hover/transisi, highlight baris juara #1 |
 | `agent/ui/templates/index.html` | Fade-in kartu, transisi dot koneksi, tooltip tombol sinkron diperjelas |
-| `README.md` | Ditulis ulang mengikuti pola abilithic-recon/abilithic-scan |
+| `agent/config.example.yaml`, `agent/kiosk.py`, `agent/ui/server.py`, `agent/run-agent.sh` | Port default 8080 → 9090 |
+| `README.md` | Ditulis ulang mengikuti pola abilithic-recon/abilithic-scan; link ke `docs/` diperbarui |
 | `DISCLAIMER.md`, `assets/README.md` | **Baru** |
+| `docs/TECHNICAL-DESIGN.md` | **Baru** — TDD asli dipindahkan ke dalam repo |
+| `docs/REVIEW-AND-CONCEPT-v2.md` | **Baru** — dokumen ini, dipindah dari root |
+| `docs/DEPLOYMENT-GUIDE.md` | **Baru** — dipindah & disunting dari `PANDUAN-SETUP-v0.1.md` |
+| `docs/setup-participant.md` | Port 8080 → 9090 |
 
 Semua perubahan Python diverifikasi `py_compile` + unit test manual (pytest
 tidak tersedia offline di sandbox verifikasi, jadi test dijalankan langsung
-via runner manual — lihat riwayat kerja). Perubahan TypeScript/TSX
-diverifikasi dengan `tsc --noEmit` memakai `node_modules` proyek yang sudah
-ter-install; hasil: 0 error di kedua pemeriksaan.
+via runner manual). Perubahan TypeScript/TSX diverifikasi dengan `tsc
+--noEmit` memakai `node_modules` proyek yang sudah ter-install; hasil: 0
+error di kedua pemeriksaan.

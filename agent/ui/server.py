@@ -1,4 +1,5 @@
-"""Local UI (TDD §8, §35) — Flask app di localhost:8080.
+"""Local UI (TDD §8, §35) — Flask app di localhost:9090 (port dikonfigurasi via
+`local_ui_port`, sengaja bukan 8080 agar tak bentrok Burp Suite/ZAP).
 
 Halaman registrasi peserta + status/hint/timer realtime (polling JS ke /status).
 Tidak menyentuh internet; hanya bicara ke 'runtime' (objek di main.py).

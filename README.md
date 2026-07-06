@@ -21,7 +21,7 @@ Free and open source, self-hosted on Vercel + Supabase.
 
 <img src="assets/abilithic-horizontal-1200.png" alt="abilithic DHC" width="520"/>
 
-[⬇️ Quickstart](#-quickstart) · [✨ Features](#-key-features) · [⚙️ How it works](#️-how-it-works) · [📖 Full concept / TDD](KONSEP-abilithic-defensive-competition.md) · [⚠️ Disclaimer](DISCLAIMER.md)
+[⬇️ Quickstart](#-quickstart) · [✨ Features](#-key-features) · [⚙️ How it works](#️-how-it-works) · [📖 Technical Design](docs/TECHNICAL-DESIGN.md) · [⚠️ Disclaimer](DISCLAIMER.md)
 
 </div>
 
@@ -52,7 +52,7 @@ reflected on a public leaderboard within seconds, no grader required.
 - ⚡ **Truly live scoring** — leaderboard polls + Supabase Realtime, admin
   console auto-refreshes participant status, and the agent's clock-skew
   correction means scores keep flowing even when a cloned VM's system clock
-  is wrong (see [`REVIEW-DAN-KONSEP-v2.md`](REVIEW-DAN-KONSEP-v2.md) §2.1) —
+  is wrong (see [`docs/REVIEW-AND-CONCEPT-v2.md`](docs/REVIEW-AND-CONCEPT-v2.md) §2.1) —
   no more waiting on a manual VMware/Ubuntu clock refresh.
 - 🧩 **Modular checks** — add a new hardening check by dropping a
   `manifest.yaml` + `check.py` into `agent/checks/`; the scoring engine never
@@ -116,7 +116,7 @@ the environment variables.
 cd agent
 cp config.example.yaml config.yaml   # set portal_url to your deployed web URL
 pip install -r requirements.txt
-sudo python3 main.py                 # open http://localhost:8080 to register
+sudo python3 main.py                 # open http://localhost:9090 to register
 ```
 Or launch the kiosk companion app instead of the bare agent:
 `python3 kiosk.py` (see [`docs/kiosk-setup.md`](docs/kiosk-setup.md) for
@@ -124,9 +124,12 @@ autostart on VM boot).
 
 ### 4. Run a competition
 1. On **`/admin`**: create a session, pick a difficulty (Easy/Medium/Hard), get a **session code**.
-2. Participants register at `localhost:8080` using that code.
+2. Participants register at `localhost:9090` using that code.
 3. Organizer clicks **START** → every agent begins scoring simultaneously → live scores on **`/`**.
 4. **STOP** freezes scores → export results.
+
+> 🧭 First time self-hosting this end-to-end (repo → Supabase → Vercel → VM)?
+> See the detailed beginner walkthrough: [`docs/DEPLOYMENT-GUIDE.md`](docs/DEPLOYMENT-GUIDE.md).
 
 ## 🎛️ What Each Piece Does
 
@@ -154,7 +157,7 @@ reach into a participant's VM. Every scoring cycle: sync clock with the
 server (no manual clock fixing needed) → fetch competition state → run the
 active checks → compute the score (pure function, `eligible = failed at
 START`) → sign and send. Full design in
-[`KONSEP-abilithic-defensive-competition.md`](KONSEP-abilithic-defensive-competition.md).
+[`docs/TECHNICAL-DESIGN.md`](docs/TECHNICAL-DESIGN.md).
 
 ## 🗺️ Roadmap
 

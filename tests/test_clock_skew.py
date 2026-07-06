@@ -1,4 +1,4 @@
-"""Unit test untuk perbaikan clock-skew (REVIEW-DAN-KONSEP-v2.md §2.1).
+"""Unit test untuk perbaikan clock-skew (docs/REVIEW-AND-CONCEPT-v2.md §2.1).
 
 Skenario yang diuji: jam VM peserta MELESET (mis. VM clone/template VMware
 tanpa NTP), tapi agen tetap harus menghasilkan timestamp yang lolos jendela
@@ -44,7 +44,7 @@ def test_signing_without_offset_fails_when_clock_is_skewed():
 def test_signing_with_offset_corrects_skewed_clock():
     """Dengan clock_offset_ms hasil sync_clock() (offset = server_time - local_time),
     timestamp yang dikirim harus lolos jendela toleransi server walau jam VM
-    meleset jauh. Ini inti perbaikan REVIEW-DAN-KONSEP-v2.md §2.1."""
+    meleset jauh. Ini inti perbaikan docs/REVIEW-AND-CONCEPT-v2.md §2.1."""
     real_now_ms = time.time() * 1000
     skew_ms = -30 * 60 * 1000  # VM mundur 30 menit
     skewed_local_now_ms = real_now_ms + skew_ms

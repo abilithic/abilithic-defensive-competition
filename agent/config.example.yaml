@@ -11,7 +11,9 @@ image_version: "2024.04"
 poll_interval_sec: 15
 
 # Port mini web lokal untuk registrasi & status peserta.
-local_ui_port: 8080
+# Default 9090 (bukan 8080) — 8080 sering dipakai proxy Burp Suite/OWASP ZAP
+# di mesin tester, jadi dihindari supaya tidak bentrok.
+local_ui_port: 9090
 
 # Folder penyimpanan state lokal (token, antrian store-and-forward).
 state_dir: "/var/lib/abilithic-agent"

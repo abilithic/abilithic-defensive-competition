@@ -1,4 +1,4 @@
-# 🚀 Panduan Setup abilithic DHC v0.1 — Dari Nol Sampai Jalan
+# 🚀 Panduan Deployment abilithic DHC — Dari Nol Sampai Jalan
 
 > Panduan lengkap untuk pemula. Ikuti **berurutan**. Estimasi total: **1,5–3 jam**
 > (sebagian besar menunggu instalasi Ubuntu). Centang tiap langkah yang selesai. ✅
@@ -81,7 +81,7 @@ git push -u origin main
 2. Buka file `db/schema.sql` di komputer, **copy seluruh isinya**, paste ke editor.
 3. Klik **Run** (atau Ctrl+Enter). Pastikan muncul **Success**. ✅
 4. Klik **+ New query** lagi. Buka `db/seed/difficulties.sql`, copy-paste, **Run**.
-   Ini mengisi 3 tingkat (Easy/Medium/Hard) + 5 check Linux. ✅
+   Ini mengisi 3 tingkat (Easy/Medium/Hard) + 15 check Linux. ✅
 
 ### 2.3 Ambil kunci API (penting untuk Langkah 3)
 1. Menu kiri → **Project Settings** (ikon gerigi) → **API**.
@@ -236,13 +236,15 @@ image_version: "2026.04"
 Simpan di nano: **Ctrl+O → Enter → Ctrl+X**.
 
 ### 5.5 Tanam celah keamanan (canonical dirty state)
-Agar ada yang bisa di-hardening, jalankan skrip penanam 5 celah:
+Agar ada yang bisa di-hardening, jalankan skrip penanam celah:
 ```bash
 cd ~/abilithic-defensive-competition
 sudo bash image/build/provision.sh
 ```
-Ini akan (sengaja): mengaktifkan root login SSH, mematikan UFW, memasang telnet,
-menambah user `hacker`, dan melonggarkan permission `/etc/shadow`. ✅
+Ini akan (sengaja) menanam **15 celah keamanan** (root login SSH aktif, UFW mati,
+telnet terpasang, user rogue, permission longgar, backdoor SUID, dst. — lihat
+`image/build/provision.sh`). Tingkat kesulitan yang dipilih nanti di admin
+(Easy/Medium/Hard) menentukan subset mana yang benar-benar dinilai. ✅
 
 ### 5.6 Jalankan agent
 ```bash
@@ -250,7 +252,7 @@ cd ~/abilithic-defensive-competition/agent
 sudo python3 main.py
 ```
 - Biarkan terminal ini terbuka (agent berjalan di sini).
-- Buka browser **di dalam VM** ke **http://localhost:8080** → muncul halaman registrasi agent. ✅
+- Buka browser **di dalam VM** ke **http://localhost:9090** → muncul halaman registrasi agent. ✅
 
 > 🛠️ **(Opsional) Jadikan service otomatis** (agar jalan saat boot):
 > ```bash
@@ -271,14 +273,15 @@ sudo python3 main.py
 3. Muncul **Kode Sesi**, contoh `DHC-7Q2X`. **Catat.**
 
 ### 6.2 Registrasi peserta (di dalam VM)
-1. Di VM, buka **http://localhost:8080**.
+1. Di VM, buka **http://localhost:9090**.
 2. Isi Nama, Sekolah, dan **Kode Sesi** tadi → **Daftar**.
 3. Muncul "Berhasil terdaftar. Menunggu START...". ✅
 4. Cek: di halaman **admin** & **leaderboard**, nama peserta muncul.
 
 ### 6.3 START & hardening
 1. Di **/admin**, klik **▶ Start** pada sesi. Timer mulai berjalan.
-2. Di VM (`localhost:8080`), status berubah **RUNNING**, muncul daftar 5 tugas.
+2. Di VM (`localhost:9090`), status berubah **RUNNING**, muncul daftar tugas
+   hardening (jumlahnya sesuai tingkat: 6 di Easy, 11 di Medium, 15 di Hard).
 3. Lakukan perbaikan di terminal VM, contoh:
    ```bash
    sudo sed -i 's/^PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config && sudo systemctl restart ssh
@@ -302,10 +305,10 @@ Kalau semua ini berhasil, **v0.1 kamu resmi jalan end-to-end.** 🚀
 
 | Gejala | Solusi |
 |---|---|
-| `localhost:8080` tak terbuka di VM | Pastikan terminal `sudo python3 main.py` masih jalan tanpa error. |
+| `localhost:9090` tak terbuka di VM | Pastikan terminal `sudo python3 main.py` masih jalan tanpa error. |
 | Registrasi: "kode sesi tidak ditemukan" | Pastikan sesi sudah dibuat di /admin & kode diketik benar (huruf besar). |
 | Registrasi gagal / timeout | Cek `portal_url` di `config.yaml` = URL Vercel yang benar (pakai `https://`). Cek VM ada internet (`ping google.com`). |
-| Skor tidak naik | Perbaikan mungkin belum sesuai — lihat hint di `localhost:8080`. Pastikan status **RUNNING**. |
+| Skor tidak naik | Perbaikan mungkin belum sesuai — lihat hint di `localhost:9090`. Pastikan status **RUNNING**. |
 | Leaderboard tak update | Tunggu ~4 detik (mode polling) atau aktifkan Realtime (2.4). Refresh halaman. |
 | Admin "Password salah" | `ADMIN_PASSWORD` di Vercel ≠ yang kamu ketik. Cek Environment Variables di Vercel → Redeploy bila baru diubah. |
 | Error 401 di agent | `AGENT_HMAC_SECRET` di Vercel berubah setelah peserta daftar. Daftar ulang peserta. |
@@ -329,4 +332,5 @@ Untuk lomba nyata, kamu bekukan VM ini menjadi 1 image yang dibagikan ke semua p
 
 ---
 
-**Butuh bantuan di langkah tertentu?** Sebutkan langkah + pesan error yang muncul, nanti aku bantu urai satu per satu.
+**Ada kendala di langkah tertentu?** Buka [issue](../../issues) baru dan sertakan
+nomor langkah + pesan error yang muncul.

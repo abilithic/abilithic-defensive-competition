@@ -78,7 +78,7 @@ class SnapshotManager:
 
         `now_ms`: waktu terkoreksi offset server (Runtime._now_ms()), bila
         tersedia. Field ini bernama *_server_ms; tanpa koreksi ia sebenarnya
-        cuma jam lokal VM yang bisa saja ngaco (lihat REVIEW-DAN-KONSEP-v2.md)."""
+        cuma jam lokal VM yang bisa saja ngaco (lihat docs/REVIEW-AND-CONCEPT-v2.md)."""
         snap = {
             "schema_version": "1.0",
             "participant_id": participant_id,

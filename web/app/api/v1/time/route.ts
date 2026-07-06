@@ -12,7 +12,7 @@ const NO_CACHE = {
 
 // GET /api/v1/time — TIDAK di-signing, sengaja publik & tanpa auth.
 //
-// Alasan (lihat REVIEW-DAN-KONSEP-v2.md §2.1): endpoint agen lain (/state,
+// Alasan (lihat docs/REVIEW-AND-CONCEPT-v2.md §2.1): endpoint agen lain (/state,
 // /score, /heartbeat, /snapshot) mewajibkan HMAC + jendela toleransi jam
 // (±5 menit, lihat lib/hmac.ts). Bila jam VM peserta ngaco (umum pada VM
 // hasil clone/template VMware tanpa NTP), SEMUA request bersanding gagal

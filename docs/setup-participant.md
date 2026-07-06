@@ -11,11 +11,11 @@
 ## 2. Saat hari-H
 
 1. Nyalakan VM dan pastikan **terhubung internet** (NAT/Bridged).
-2. Di dalam VM, buka browser ke **http://localhost:8080** (UI agent).
+2. Di dalam VM, buka browser ke **http://localhost:9090** (UI agent).
 3. Isi **Nama**, **Sekolah**, dan **Kode Sesi** (dibagikan panitia), klik **Daftar**.
 4. Tunggu panitia menekan **START**. Timer & daftar tugas akan muncul otomatis.
 5. Lakukan **hardening**. Setiap perbaikan benar menambah skor — pantau di:
-   - `localhost:8080` (status pribadi + hint), dan
+   - `localhost:9090` (status pribadi + hint), dan
    - papan skor publik (URL dari panitia).
 6. Saat waktu habis, skor otomatis **dibekukan**. Perbaikan setelah itu tidak dihitung.
 
@@ -29,6 +29,6 @@
 
 | Masalah | Solusi |
 |---|---|
-| `localhost:8080` tak terbuka | Pastikan agent jalan: `sudo systemctl status abilithic-agent` |
+| `localhost:9090` tak terbuka | Pastikan agent jalan: `sudo systemctl status abilithic-agent` |
 | "Kode sesi tidak ditemukan" | Pastikan kode benar & panitia sudah membuat sesi |
-| Skor tak naik | Cek hint di `localhost:8080`; mungkin perbaikan belum sesuai |
+| Skor tak naik | Cek hint di `localhost:9090`; mungkin perbaikan belum sesuai |

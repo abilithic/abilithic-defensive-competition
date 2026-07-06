@@ -14,7 +14,7 @@ versi mengikuti [SemVer](https://semver.org) (TDD §24).
   semua request ditolak diam-diam sampai jam VM dikoreksi manual. Timer
   countdown, `computed_at_ms` skor, dan `taken_at_server_ms` snapshot ikut
   dikoreksi (`agent/main.py`, `agent/snapshot/manager.py`). Lihat
-  `REVIEW-DAN-KONSEP-v2.md` §2 untuk diagnosis lengkap. Test regresi:
+  `docs/REVIEW-AND-CONCEPT-v2.md` §2 untuk diagnosis lengkap. Test regresi:
   `tests/test_clock_skew.py`.
 - **Admin console tidak auto-refresh**: daftar sesi & peserta kini polling
   otomatis (5s / 4s) alih-alih menunggu reload manual (`web/app/admin/page.tsx`).
@@ -47,6 +47,22 @@ versi mengikuti [SemVer](https://semver.org) (TDD §24).
 - README ditulis ulang mengikuti pola abilithic-recon & abilithic-scan
   (badge, hero, screenshots, footer branding); tambah `DISCLAIMER.md` dan
   `assets/README.md`.
+- **Port lokal kiosk/agent: `8080` → `9090`** (`agent/config.example.yaml`,
+  `agent/kiosk.py`, `agent/main.py`, `agent/ui/server.py`, `agent/run-agent.sh`,
+  `README.md`, `docs/setup-participant.md`, `docs/DEPLOYMENT-GUIDE.md`) — 8080
+  lazim dipakai proxy Burp Suite/OWASP ZAP di mesin tester, jadi dihindari agar
+  agent bisa jalan berdampingan dengan alat itu di komputer yang sama. Entri
+  changelog historis di atas (v0.1/v0.2) sengaja tidak diubah.
+- **Reorganisasi dokumen untuk presentasi GitHub yang lebih profesional**:
+  - `KONSEP-abilithic-defensive-competition.md` (TDD asli, sebelumnya hidup di
+    luar repo git dan tak pernah ter-upload) dipindahkan ke dalam repo sebagai
+    `docs/TECHNICAL-DESIGN.md`.
+  - `REVIEW-DAN-KONSEP-v2.md` (root, nama campur bahasa) → `docs/REVIEW-AND-CONCEPT-v2.md`.
+  - `PANDUAN-SETUP-v0.1.md` (root) → `docs/DEPLOYMENT-GUIDE.md`, disunting agar
+    tak lagi menyebut "v0.1"/"5 celah" (sudah 15 celah & 3 tingkat sejak v0.2).
+  - Root repo kini hanya berisi file governance standar GitHub (README, LICENSE,
+    CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, DISCLAIMER, CHANGELOG); seluruh
+    dokumen teknis/naratif panjang ada di `docs/`.
 
 ## [0.1.0] — 2026-06-30
 ### Added

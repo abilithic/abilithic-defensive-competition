@@ -20,7 +20,7 @@ import time
 import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-PORT = 8080
+PORT = 9090  # harus sama dengan local_ui_port di config.yaml (bukan 8080 — hindari bentrok Burp Suite/ZAP)
 URL = f"http://127.0.0.1:{PORT}"
 
 _agent_proc = None

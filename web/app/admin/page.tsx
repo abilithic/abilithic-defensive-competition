@@ -36,7 +36,7 @@ export default function Admin() {
   useEffect(() => { checkAuth(); }, []);
 
   // Auto-refresh: sesi & peserta TIDAK lagi menunggu klik manual (lihat
-  // REVIEW-DAN-KONSEP-v2.md §2.2 — sebelumnya panitia harus reload sendiri
+  // docs/REVIEW-AND-CONCEPT-v2.md §2.2 — sebelumnya panitia harus reload sendiri
   // untuk melihat status online/offline & skor terbaru).
   useEffect(() => {
     if (!authed) return;
