@@ -189,4 +189,10 @@ async function poll(){
     }
   }catch(e){
     document.getElementById('dot').className='dot err';
-    document.getElementById('conn-text').textContent='Ag
+    document.getElementById('conn-text').textContent='Agent tidak merespons';
+  }
+}
+setInterval(poll,2000); poll();
+</script>
+</body>
+</html>

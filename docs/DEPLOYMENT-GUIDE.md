@@ -343,4 +343,73 @@ Sejak v0.3, `kiosk.py` **otomatis membuka lagi jendelanya sendiri** dalam
 panitia **tidak perlu melakukan apa pun**. Kalau suatu saat window tetap
 tidak muncul lagi (kasus langka: proses kiosk.py ikut mati, bukan cuma
 window-nya), ada dua fallback:
-- **Peserta:** double-click shortcut **"Restart abilithic DHC"** d
+- **Peserta:** double-click shortcut **"Restart abilithic DHC"** di Desktop —
+  tidak perlu buka terminal.
+- **Panitia (lewat terminal/SSH):**
+  ```bash
+  bash /opt/abilithic-agent/kiosk/restart-kiosk.sh
+  ```
+
+## Command Troubleshooting Umum
+
+```bash
+# Status service inti (agent & telnet listener simulasi)
+systemctl status abilithic-agent dhc-telnetd
+
+# Apakah kiosk.py & main.py benar-benar jalan?
+ps aux | grep -E "kiosk.py|main.py" | grep -v grep
+
+# Log autostart kiosk (boot saat ini)
+journalctl --user -b | grep -i -E "kiosk|webview|gtk"
+
+# Log service agent (systemd, root)
+sudo journalctl -u abilithic-agent -n 100 --no-pager
+
+# Cek /opt sudah sinkron dengan repo git (kosong = sudah sama)
+diff ~/abilithic-defensive-competition/agent/kiosk.py /opt/abilithic-agent/kiosk.py
+
+# Restart paksa semuanya dari nol (kiosk + agent service)
+sudo systemctl restart abilithic-agent
+sudo pkill -f kiosk.py 2>/dev/null
+python3 /opt/abilithic-agent/kiosk.py &
+
+# Cek koneksi ke web portal (Vercel) dari dalam VM
+curl -sS -o /dev/null -w "%{http_code}\n" "$(grep portal_url /opt/abilithic-agent/config.yaml | awk '{print $2}' | tr -d '\"')"
+```
+
+## Tabel Gejala → Solusi
+
+| Gejala | Solusi |
+|---|---|
+| `localhost:9090` tak terbuka di VM | Pastikan `abilithic-agent.service` jalan (`systemctl status abilithic-agent`) atau terminal `sudo python3 main.py` masih jalan tanpa error. |
+| Sudah `git pull` tapi perilaku VM tidak berubah | **Penyebab paling umum**: lupa resync ke `/opt/abilithic-agent/`. Jalankan `sudo bash agent/kiosk/install-kiosk.sh` lalu `sudo systemctl restart abilithic-agent`. |
+| Kiosk blank/hitam setelah restart VM | Cek `ps aux \| grep kiosk.py` — kalau prosesnya tidak ada sama sekali, autostart gagal ke-trigger (cek `~/.config/autostart/abilithic-dhc.desktop` & `journalctl --user -b`). Kalau proses ADA tapi window tetap blank, coba paksa X11: edit `abilithic-dhc.desktop`, tambahkan `Environment=GDK_BACKEND=x11` sebelum `Exec=`. |
+| Window kiosk ke-close peserta | Otomatis terbuka lagi ~2 detik. Kalau tidak, double-click shortcut **"Restart abilithic DHC"** di Desktop. |
+| Registrasi: "kode sesi tidak ditemukan" | Pastikan sesi sudah dibuat di /admin & kode diketik benar (huruf besar). |
+| Registrasi gagal / timeout | Cek `portal_url` di `config.yaml` (dan di `/opt/abilithic-agent/config.yaml`!) = URL Vercel yang benar (pakai `https://`). Cek VM ada internet (`ping google.com`). |
+| Skor tidak naik | Perbaikan mungkin belum sesuai — lihat hint di `localhost:9090` (klik baris soal). Pastikan status **RUNNING**. |
+| Leaderboard tak update | Tunggu ~4 detik (mode polling) atau aktifkan Realtime (2.4). Refresh halaman. |
+| Admin "Password salah" | `ADMIN_PASSWORD` di Vercel ≠ yang kamu ketik. Cek Environment Variables di Vercel → Redeploy bila baru diubah. |
+| Error 401 di agent | `AGENT_HMAC_SECRET` di Vercel berubah setelah peserta daftar. Daftar ulang peserta. |
+| `pip3 install` error "externally managed" | Tambahkan `--break-system-packages`. |
+| VMware minta lisensi | Pilih opsi **Personal Use (free)**, tanpa kunci. |
+| Ubuntu berat/lemot | Naikkan RAM VM ke 4–6 GB, Processors ke 2–4 (VM Settings). |
+
+---
+
+# 📦 (Opsional) Setelah berhasil: buat OVA untuk peserta
+
+Untuk lomba nyata, kamu bekukan VM ini menjadi 1 image yang dibagikan ke semua peserta:
+1. Di VM, pastikan agent ter-install sebagai **service** (5.6 opsional) & `provision.sh` sudah dijalankan.
+2. Matikan VM. Di VMware: **File → Export to OVF/OVA**.
+3. Hitung checksum untuk verifikasi peserta:
+   ```powershell
+   certutil -hashfile abilithic-dhc-2026.04.ova SHA256
+   ```
+4. Unggah OVA + checksum ke **GitHub Releases** atau Google Drive → bagikan link.
+   (Lihat `image/README.md`.)
+
+---
+
+**Ada kendala di langkah tertentu?** Buka [issue](../../issues) baru dan sertakan
+nomor langkah + pesan error yang muncul.

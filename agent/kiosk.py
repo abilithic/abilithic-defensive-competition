@@ -78,9 +78,35 @@ ERROR_HTML = """<!DOCTYPE html><html><head><meta charset="utf-8">
 _agent_proc = None
 
 
+def _agent_already_running():
+    """Cek apakah UI lokal sudah dilayani pihak lain (mis. systemd service
+    `abilithic-agent`, yang normalnya jalan terus-menerus di instalasi
+    kiosk). Kalau sudah, kiosk.py TIDAK BOLEH menjalankan main.py sendiri --
+    dua proses main.py rebutan port 9090 menyebabkan salah satunya gagal
+    bind ("Address already in use") dan bisa membuat UI/registrasi
+    berperilaku aneh (window kadang bicara ke proses yang salah/baru saja
+    crash)."""
+    try:
+        with urllib.request.urlopen(URL, timeout=2) as r:
+            return r.status == 200
+    except Exception:
+        return False
+
+
 def start_agent():
-    """Jalankan agent (main.py) sebagai proses terpisah."""
+    """Jalankan agent (main.py) sebagai proses terpisah -- HANYA kalau belum
+    ada yang melayani port 9090 (lihat _agent_already_running()). Di
+    instalasi kiosk normal, `abilithic-agent.service` (systemd) yang
+    menjalankan main.py; kiosk.py di sini murni menampilkan jendelanya saja.
+    Kalau dijalankan berdiri sendiri saat development (tanpa systemd
+    service), kiosk.py tetap akan menjalankan main.py sendiri seperti
+    biasa."""
     global _agent_proc
+    if _agent_already_running():
+        print("[kiosk] agent lokal sudah melayani port 9090 (mis. via "
+              "systemd abilithic-agent) -- tidak menjalankan salinan baru.",
+              flush=True)
+        return None
     py = sys.executable or "python3"
     _agent_proc = subprocess.Popen([py, os.path.join(HERE, "main.py")])
     return _agent_proc

@@ -4,6 +4,20 @@ Semua perubahan penting dicatat di sini. Format: [Keep a Changelog](https://keep
 versi mengikuti [SemVer](https://semver.org) (TDD §24).
 
 ## [Unreleased]
+### Fixed
+- **`kiosk.py` menjalankan `main.py` duplikat, rebutan port 9090 dengan
+  `abilithic-agent.service` (systemd)**: ditemukan lewat log
+  `/tmp/abilithic-kiosk.log` yang menunjukkan "Address already in use"
+  setiap kali kiosk (re)start. Karena systemd sudah menjalankan `main.py`
+  terus-menerus di instalasi kiosk normal, `kiosk.py` yang IKUT menjalankan
+  salinan `main.py` sendiri (`start_agent()`) menyebabkan proses kedua ini
+  gagal bind port dan mati, sekaligus berpotensi bikin UI/registrasi
+  bertingkah aneh. Fix: `start_agent()` (`agent/kiosk.py`) sekarang cek dulu
+  lewat `_agent_already_running()` apakah port 9090 sudah dilayani (mis.
+  oleh systemd) sebelum memutuskan menjalankan `main.py` sendiri — aman
+  dipakai baik lewat instalasi kiosk (systemd) maupun standalone saat
+  development.
+
 ### Added
 - **Kiosk otomatis membuka lagi kalau jendelanya ditutup**: sebelumnya kalau
   peserta tidak sengaja menutup window (klik close/Alt+F4), `kiosk.py`
@@ -165,4 +179,23 @@ versi mengikuti [SemVer](https://semver.org) (TDD §24).
   - `PANDUAN-SETUP-v0.1.md` (root) → `docs/DEPLOYMENT-GUIDE.md`, disunting agar
     tak lagi menyebut "v0.1"/"5 celah" (sudah 15 celah & 3 tingkat sejak v0.2).
   - Root repo kini hanya berisi file governance standar GitHub (README, LICENSE,
-    CONTRIBUTING, CODE_OF_COND
+    CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, DISCLAIMER, CHANGELOG); seluruh
+    dokumen teknis/naratif panjang ada di `docs/`.
+
+## [0.1.0] — 2026-06-30
+### Added
+- **Database**: schema Postgres (competitions, participants, checks, difficulties,
+  participant_checks, scores, snapshots, event_logs, nonces) + view `leaderboard`.
+- **Seed**: preset tingkat Easy/Medium/Hard + 5 check Linux dasar
+  (ssh_root_disabled, ufw_enabled, telnet_disabled, rogue_user_removed, shadow_perm).
+- **Agent (Python)**: arsitektur modular — state_manager, score_engine (pure fn),
+  check_runner, network client + retry/backoff + store-and-forward, snapshot manager,
+  crypto HMAC signing, logger terstruktur, local UI (localhost:8080).
+- **Web (Next.js)**: API `/v1` (register, state, score, heartbeat, snapshot, admin),
+  leaderboard realtime (Supabase Realtime), halaman admin START/PAUSE/STOP.
+- **Baseline & Evidence**: snapshot registration/start/stop + eligibility anti pre-fix.
+- **Governance**: README, LICENSE (MIT), CONTRIBUTING, SECURITY, CODE_OF_CONDUCT, ADR-001..006.
+- **CI**: GitHub Actions (lint + unit test scoring).
+
+[Unreleased]: https://github.com/abilithic/abilithic-defensive-competition/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/abilithic/abilithic-defensive-competition/releases/tag/v0.1.0

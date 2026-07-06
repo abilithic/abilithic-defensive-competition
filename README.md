@@ -201,4 +201,50 @@ that actually runs at boot is a **separate copy** installed to
 ```bash
 cd ~/abilithic-defensive-competition
 git pull
-sudo bash a
+sudo bash agent/kiosk/install-kiosk.sh   # resyncs code into /opt + restarts the service
+sudo systemctl restart abilithic-agent
+```
+
+**Kiosk window accidentally closed by a participant:** `kiosk.py` now
+auto-reopens the window on its own within ~2 seconds — no action needed. If
+the window is ever truly stuck, double-click the **"Restart abilithic DHC"**
+shortcut on the Desktop (no terminal required), or run
+`bash /opt/abilithic-agent/kiosk/restart-kiosk.sh`.
+
+**Common diagnostic commands:**
+```bash
+systemctl status abilithic-agent dhc-telnetd   # are the services alive?
+ps aux | grep -E "kiosk.py|main.py"            # is the kiosk/agent actually running?
+journalctl --user -b | grep -i -E "kiosk|webview|gtk"  # kiosk autostart logs this boot
+diff ~/abilithic-defensive-competition/agent/kiosk.py /opt/abilithic-agent/kiosk.py  # in sync?
+```
+
+## ⚠️ Disclaimer
+
+This platform intentionally plants security vulnerabilities into VMs for
+training purposes. **Isolated/air-gapped competition networks only** — see
+[DISCLAIMER.md](DISCLAIMER.md) before deploying.
+
+## 📄 License
+
+[MIT](LICENSE) © 2026 abilithic.
+
+---
+
+<!-- GitHub topics: cybersecurity, blue-team, ctf, cyberpatriot, defensive-security,
+system-hardening, linux-hardening, security-competition, nextjs, supabase, python,
+realtime, education, capture-the-flag-alternative -->
+
+<div align="center">
+
+### 👤 Developed by **Abil Khosim** — *Cybersecurity Specialist*
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Abil%20Khosim-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/abil-khosim-itsec/)
+
+*abilithic DHC* is an original project by Abil Khosim, part of the Abilithic
+family (Recon · Scan · DHC). Released under the MIT License — please keep
+this attribution when reusing or redistributing.
+
+<sub>Security, built like stone. 🛡️</sub>
+
+</div>
