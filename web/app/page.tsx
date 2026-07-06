@@ -88,7 +88,14 @@ export default function Leaderboard() {
         <table>
           <thead><tr><th>#</th><th>Peserta</th><th>Sekolah</th><th style={{ textAlign: "right" }}>Skor</th></tr></thead>
           <tbody>
-            {!loaded && <tr><td colSpan={4} className="empty"><span className="spinner" /> Memuat…</td></tr>}
+            {!loaded && [0, 1, 2].map((i) => (
+              <tr key={i}>
+                <td><div className="skel-row" style={{ width: 20 }} /></td>
+                <td><div className="skel-row" style={{ width: 140 }} /></td>
+                <td><div className="skel-row" style={{ width: 90 }} /></td>
+                <td><div className="skel-row" style={{ width: 50, marginLeft: "auto" }} /></td>
+              </tr>
+            ))}
             {loaded && rows.length === 0 && <tr><td colSpan={4} className="empty">Belum ada peserta terdaftar.</td></tr>}
             {rows.map((r) => (
               <tr key={r.participant_id} className={r.rank === 1 ? "top1" : ""}>
@@ -106,8 +113,9 @@ export default function Leaderboard() {
         </table>
       </div>
 
-      <div className="small muted" style={{ textAlign: "center" }}>
-        Papan skor memperbarui otomatis · abilithic DHC
+      <div className="small muted" style={{ textAlign: "center", display: "flex", justifyContent: "center", gap: 8, alignItems: "center" }}>
+        <span className="live-tag"><span className="live-dot" /> Live</span>
+        <span>· Papan skor memperbarui otomatis · abilithic DHC</span>
       </div>
     </div>
   );

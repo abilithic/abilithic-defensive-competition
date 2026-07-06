@@ -25,6 +25,11 @@ class ApiClient:
         self.participant_id = None
         self.secret = None
         self._queue = []  # store-and-forward: list of (path, payload)
+        # Koreksi jam lokal VM vs jam server (TDD/ADR clock-skew, lihat sync_clock()).
+        # Tanpa ini, VM dengan jam salah (umum pada clone/template VMware tanpa
+        # NTP) akan gagal jendela toleransi timestamp server (±5 menit) dan
+        # seluruh sinkronisasi tampak "macet" sampai jam VM dikoreksi manual.
+        self.clock_offset_ms = 0
 
     def set_credentials(self, participant_id, secret):
         self.participant_id = participant_id
@@ -36,7 +41,8 @@ class ApiClient:
         body = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
         headers = {"Content-Type": "application/json"}
         if signed and self.participant_id and self.secret:
-            headers = build_auth_headers(self.participant_id, self.secret, "POST", path, body)
+            headers = build_auth_headers(self.participant_id, self.secret, "POST", path, body,
+                                         clock_offset_ms=self.clock_offset_ms)
         resp = requests.post(url, data=body.encode("utf-8"), headers=headers, timeout=self.timeout)
         return resp
 
@@ -46,9 +52,32 @@ class ApiClient:
         url = self.base + path + (query or "")
         headers = {"Cache-Control": "no-cache", "Pragma": "no-cache"}
         if signed and self.participant_id and self.secret:
-            headers.update(build_auth_headers(self.participant_id, self.secret, "GET", path, ""))
+            headers.update(build_auth_headers(self.participant_id, self.secret, "GET", path, "",
+                                              clock_offset_ms=self.clock_offset_ms))
         resp = requests.get(url, headers=headers, timeout=self.timeout)
         return resp
+
+    # ---------- clock sync (anti clock-skew VMware/Ubuntu) ----------
+    def sync_clock(self):
+        """Tanya jam server (endpoint publik, tanpa signing) lalu simpan offset.
+        Dipanggil tiap siklus poll SEBELUM request ber-signing lain — memutus
+        masalah ayam-telur (butuh request untuk tahu skew, tapi request
+        ber-signing butuh jam yang sudah benar). Gagal = diam-diam pertahankan
+        offset lama (lebih baik daripada 0 tiba-tiba bila server sedang lambat)."""
+        try:
+            t0 = time.time() * 1000
+            resp = requests.get(self.base + "/api/v1/time", timeout=self.timeout)
+            t1 = time.time() * 1000
+            if resp.status_code == 200:
+                server_ms = resp.json().get("server_time_ms")
+                if server_ms is not None:
+                    # kompensasi separuh round-trip network agar lebih presisi
+                    local_mid = (t0 + t1) / 2
+                    self.clock_offset_ms = int(server_ms - local_mid)
+                    return True
+        except requests.RequestException as e:
+            self.log.warn("clock_sync_error", error=str(e))
+        return False
 
     # ---------- endpoints ----------
     def register(self, name, school, session_code, image_version):

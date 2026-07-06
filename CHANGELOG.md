@@ -4,6 +4,21 @@ Semua perubahan penting dicatat di sini. Format: [Keep a Changelog](https://keep
 versi mengikuti [SemVer](https://semver.org) (TDD §24).
 
 ## [Unreleased]
+### Fixed
+- **Akar masalah "poin/timestamp tidak update otomatis"**: agent kini
+  menyinkronkan jam ke server (`GET /api/v1/time`, tanpa signing) sebelum
+  setiap siklus, lalu mengoreksi timestamp HMAC-nya dengan offset itu
+  (`agent/crypto/signing.py`, `agent/network/client.py`). Sebelumnya, agent
+  menandatangani request dengan jam lokal VM mentah; VM hasil clone/template
+  VMware yang jamnya meleset >5 menit (jendela toleransi server) membuat
+  semua request ditolak diam-diam sampai jam VM dikoreksi manual. Timer
+  countdown, `computed_at_ms` skor, dan `taken_at_server_ms` snapshot ikut
+  dikoreksi (`agent/main.py`, `agent/snapshot/manager.py`). Lihat
+  `REVIEW-DAN-KONSEP-v2.md` §2 untuk diagnosis lengkap. Test regresi:
+  `tests/test_clock_skew.py`.
+- **Admin console tidak auto-refresh**: daftar sesi & peserta kini polling
+  otomatis (5s / 4s) alih-alih menunggu reload manual (`web/app/admin/page.tsx`).
+
 ### Added (v0.2 — dalam progres)
 - **Web console pro**: login persisten (sesi cookie httpOnly), kelola event
   (hapus/arsip sesi), kelola peserta (daftar, diskualifikasi, hapus), redesain UI
@@ -26,6 +41,12 @@ versi mengikuti [SemVer](https://semver.org) (TDD §24).
 ### Changed
 - Admin auth pindah dari header password ke sesi cookie (lib/auth.ts).
 - `provision.sh` menanam **15 celah**; seed pakai UPSERT (aman dijalankan ulang).
+- UI leaderboard/admin/kiosk dipoles: indikator "Live", skeleton loading,
+  micro-interaction hover/transisi, highlight juara #1 (`web/app/globals.css`,
+  `web/app/page.tsx`, `web/app/admin/page.tsx`, `agent/ui/templates/index.html`).
+- README ditulis ulang mengikuti pola abilithic-recon & abilithic-scan
+  (badge, hero, screenshots, footer branding); tambah `DISCLAIMER.md` dan
+  `assets/README.md`.
 
 ## [0.1.0] — 2026-06-30
 ### Added

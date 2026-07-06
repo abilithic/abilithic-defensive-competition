@@ -14,34 +14,59 @@
   --gold: #ffd23f;
   --radius: 14px;
   --shadow: 0 8px 30px rgba(0,0,0,.35);
+  --shadow-lg: 0 16px 50px rgba(0,0,0,.45);
+  --ease: cubic-bezier(.2,.7,.3,1);
 }
 * { box-sizing: border-box; }
 html, body {
   margin: 0; padding: 0; background: var(--bg); color: var(--fg);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
 }
 body {
   background-image:
     radial-gradient(900px 400px at 100% -10%, rgba(91,140,255,.12), transparent),
-    radial-gradient(700px 350px at -10% 0%, rgba(47,214,127,.08), transparent);
+    radial-gradient(700px 350px at -10% 0%, rgba(47,214,127,.08), transparent),
+    radial-gradient(600px 300px at 50% 110%, rgba(91,140,255,.06), transparent);
+  background-attachment: fixed;
 }
 a { color: var(--acc2); text-decoration: none; }
 a:hover { text-decoration: underline; }
+:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; border-radius: 6px; }
 .wrap { max-width: 1040px; margin: 0 auto; padding: 26px 20px 60px; }
+::selection { background: rgba(91,140,255,.35); color: var(--fg); }
+
+/* Scrollbar (webkit) — konsisten dengan tema gelap */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--line); border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: var(--acc); }
 
 /* Topbar / brand */
 .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; gap: 12px; flex-wrap: wrap; }
 .brand { display: flex; align-items: center; gap: 11px; }
 .logo { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, var(--acc), #6ee7b7);
-  display: grid; place-items: center; font-weight: 900; color: #071022; box-shadow: var(--shadow); }
+  display: grid; place-items: center; font-weight: 900; color: #071022; box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,.06) inset; }
 .brand h1 { font-size: 18px; margin: 0; font-weight: 800; letter-spacing: .2px; }
 .brand .sub { font-size: 12px; color: var(--mut); margin-top: 1px; }
 
 /* Cards */
 .card { background: linear-gradient(180deg, var(--card), var(--bg2)); border: 1px solid var(--line);
-  border-radius: var(--radius); padding: 18px; margin-bottom: 16px; box-shadow: var(--shadow); }
-.card h3 { margin: 0 0 12px; font-size: 15px; }
+  border-radius: var(--radius); padding: 18px; margin-bottom: 16px; box-shadow: var(--shadow);
+  transition: border-color .2s var(--ease), box-shadow .2s var(--ease); }
+.card:hover { border-color: #2c3859; }
+.card h3 { margin: 0 0 12px; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+
+/* Indikator "live" — pemberitahuan visual bahwa data ini auto-refresh
+   (leaderboard, admin), bukan cuma statis sampai di-reload manual. */
+.live-dot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: var(--ok);
+  display: inline-block; flex: none; }
+.live-dot::after { content: ""; position: absolute; inset: -4px; border-radius: 50%;
+  border: 1.5px solid var(--ok); opacity: .55; animation: livepulse 1.8s ease-out infinite; }
+.live-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700;
+  color: var(--ok); text-transform: uppercase; letter-spacing: .5px; }
+@keyframes livepulse { 0% { transform: scale(.7); opacity: .6; } 100% { transform: scale(2.1); opacity: 0; } }
 .head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .muted { color: var(--mut); }
 .small { font-size: 12px; }
@@ -64,9 +89,10 @@ input:focus, select:focus { border-color: var(--acc); }
 
 /* Buttons */
 button { font: inherit; cursor: pointer; border: 0; border-radius: 10px; padding: 10px 16px; font-weight: 700;
-  background: var(--acc); color: #fff; transition: filter .15s, transform .05s; display: inline-flex; align-items: center; gap: 7px; }
-button:hover { filter: brightness(1.08); }
-button:active { transform: translateY(1px); }
+  background: var(--acc); color: #fff; transition: filter .15s var(--ease), transform .05s, box-shadow .2s var(--ease);
+  display: inline-flex; align-items: center; gap: 7px; }
+button:hover:not(:disabled) { filter: brightness(1.08); box-shadow: 0 4px 14px rgba(91,140,255,.28); }
+button:active:not(:disabled) { transform: translateY(1px); }
 button:disabled { opacity: .4; cursor: default; filter: none; }
 button.sec { background: #26314e; }
 button.ghost { background: transparent; border: 1px solid var(--line); color: var(--fg); }
@@ -82,21 +108,31 @@ button.sm { padding: 7px 12px; font-size: 13px; border-radius: 9px; }
 table { width: 100%; border-collapse: collapse; }
 th, td { text-align: left; padding: 12px 12px; border-bottom: 1px solid var(--line); }
 th { color: var(--mut); font-size: 11px; text-transform: uppercase; letter-spacing: .5px; font-weight: 700; }
+tbody tr { transition: background .15s var(--ease); }
+tbody tr:hover { background: rgba(91,140,255,.06); }
 tr:last-child td { border-bottom: 0; }
 td.rank { font-weight: 800; width: 54px; }
 td.score { font-weight: 800; color: var(--acc2); text-align: right; font-variant-numeric: tabular-nums; }
-tr.top1 td.rank { color: var(--gold); }
+tr.top1 { background: linear-gradient(90deg, rgba(255,210,63,.08), transparent 70%); }
+tr.top1 td.rank { color: var(--gold); text-shadow: 0 0 12px rgba(255,210,63,.5); }
 .code { font-family: ui-monospace, "SF Mono", monospace; background: #0c1220; border: 1px solid var(--line);
   padding: 3px 9px; border-radius: 7px; font-size: 13px; letter-spacing: .5px; }
 
 /* Timer */
-.timer { font-size: 30px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: 1px; }
+.timer { font-size: 30px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: 1px;
+  transition: color .3s var(--ease); }
 
 /* Empty / loading */
 .empty { padding: 34px 16px; text-align: center; color: var(--mut); }
 .spinner { width: 18px; height: 18px; border: 2px solid var(--line); border-top-color: var(--acc);
   border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* Skeleton shimmer — dipakai saat memuat data pertama kali, terasa lebih
+   "hidup" dibanding teks "Memuat…" polos. */
+.skel-row { height: 16px; border-radius: 6px; background: linear-gradient(90deg, var(--line) 25%, #2c3859 37%, var(--line) 63%);
+  background-size: 400% 100%; animation: shimmer 1.4s ease infinite; }
+@keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
 
 /* Toast */
 .toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);

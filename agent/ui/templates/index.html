@@ -50,8 +50,12 @@
     .dot.ok{background:var(--ok);box-shadow:0 0 10px var(--ok)}
     .dot.warn{background:var(--warn);box-shadow:0 0 10px var(--warn)}
     .dot.err{background:var(--danger);box-shadow:0 0 10px var(--danger)}
-    .btn-refresh{background:#26314e;color:#fff;border:0;border-radius:9px;padding:8px 14px;font-weight:700;cursor:pointer;font-size:13px;margin:0;width:auto}
+    .btn-refresh{background:#26314e;color:#fff;border:0;border-radius:9px;padding:8px 14px;font-weight:700;cursor:pointer;font-size:13px;margin:0;width:auto;transition:filter .15s}
+    .btn-refresh:hover{filter:brightness(1.15)}
     .btn-refresh:active{transform:translateY(1px)}
+    .card, .connbar{animation:fadein .25s ease}
+    @keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+    .dot{transition:background .25s,box-shadow .25s}
   </style>
 </head>
 <body>
@@ -64,7 +68,7 @@
   <!-- STATUS KONEKSI + REFRESH -->
   <div class="connbar">
     <div class="conn"><span class="dot" id="dot"></span><span id="conn-text">Menyambung…</span></div>
-    <button class="btn-refresh" id="btn-refresh" onclick="doRefresh()">↻ Sinkron sekarang</button>
+    <button class="btn-refresh" id="btn-refresh" onclick="doRefresh()" title="Sinkron otomatis tiap beberapa detik — tombol ini cuma untuk memaksa sinkron instan">↻ Sinkron sekarang</button>
   </div>
 
   <!-- REGISTRASI -->

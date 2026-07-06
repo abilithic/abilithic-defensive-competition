@@ -105,11 +105,16 @@ class Runtime:
         except Exception as e:
             self.log.error("snapshot_failed", phase=phase, error=str(e))
 
+    def _now_ms(self):
+        """Waktu 'sekarang' terkoreksi offset jam server — dipakai utk timer/
+        last_sync agar tetap akurat walau jam sistem VM ngaco (TDD clock-skew)."""
+        return time.time() * 1000 + self.api.clock_offset_ms
+
     def status_snapshot(self):
         with self.lock:
             remaining = None
             if self.ends_at_ms and self.server_status == "running":
-                remaining = max(0, int((self.ends_at_ms - time.time() * 1000) / 1000))
+                remaining = max(0, int((self.ends_at_ms - self._now_ms()) / 1000))
             checks = []
             hints = self.runner.hints(self.active_codes, self.hint_policy)
             bd = {b["code"]: b for b in self.breakdown}
@@ -122,6 +127,9 @@ class Runtime:
                     "hint": hints.get(code, {}).get("hint"),
                     "points": c.points if c else 10,
                 })
+            # catatan: last_sync_sec = selisih waktu LOKAL murni (elapsed), sengaja
+            # TIDAK pakai _now_ms() terkoreksi — mengukur durasi berlalu tidak
+            # butuh koreksi offset absolut, cukup jam lokal berjalan normal.
             last_sync_sec = int(time.time() - self.last_sync) if self.last_sync else None
             return {
                 "registered": self.registered,
@@ -140,6 +148,10 @@ class Runtime:
         if not self.registered:
             return False
         with self._sync_lock:
+            # Selalu sinkronkan jam LEBIH DULU (endpoint publik, tanpa signing).
+            # Ini yang membuat proses berjalan otomatis walau jam VM ngaco —
+            # tak perlu lagi refresh manual jam Ubuntu/VMware (lihat network/client.py).
+            self.api.sync_clock()
             state = self.api.get_state()
             if state is None:
                 self.state_mgr.mark_offline()
@@ -173,7 +185,7 @@ class Runtime:
                     self.score = result["total"]
                     self.breakdown = result["breakdown"]
                 payload = [{"code": b["code"], "passed": b["passed"]} for b in result["breakdown"]]
-                self.api.send_score(result["total"], payload, int(time.time() * 1000))
+                self.api.send_score(result["total"], payload, int(self._now_ms()))
                 self.log.info("score_sent", score=result["total"])
 
             if self.state_mgr.should_capture_stop():
@@ -190,7 +202,8 @@ class Runtime:
             codes = self.active_codes or list(self.runner.checks.keys())
             state, _ev = self.runner.run_active(codes)
             snap = self.snap.build(self.participant_id, self.competition_id, phase,
-                                   state, self.cfg["image_version"], self.difficulty)
+                                   state, self.cfg["image_version"], self.difficulty,
+                                   now_ms=self._now_ms())
         self.api.send_snapshot(snap)
         if phase == "start":
             with self.lock:

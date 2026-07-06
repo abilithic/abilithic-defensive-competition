@@ -35,6 +35,23 @@ export default function Admin() {
   }
   useEffect(() => { checkAuth(); }, []);
 
+  // Auto-refresh: sesi & peserta TIDAK lagi menunggu klik manual (lihat
+  // REVIEW-DAN-KONSEP-v2.md §2.2 — sebelumnya panitia harus reload sendiri
+  // untuk melihat status online/offline & skor terbaru).
+  useEffect(() => {
+    if (!authed) return;
+    const t = setInterval(() => { if (!busy) loadComps(); }, 5000);
+    return () => clearInterval(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authed, busy]);
+
+  useEffect(() => {
+    if (!openId) return;
+    const t = setInterval(() => { if (!busy) refreshParts(openId); }, 4000);
+    return () => clearInterval(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openId, busy]);
+
   async function login() {
     setBusy(true);
     const r = await fetch("/api/v1/admin/login", {
@@ -161,7 +178,7 @@ export default function Admin() {
       </div>
 
       <div className="card">
-        <h3>Daftar Sesi ({comps.length})</h3>
+        <h3>Daftar Sesi ({comps.length}) <span className="live-tag"><span className="live-dot" /> Auto-refresh</span></h3>
         {comps.length === 0 && <div className="empty">Belum ada sesi. Buat satu di atas.</div>}
         {comps.map((c) => (
           <div key={c.id} style={{ borderTop: "1px solid var(--line)", paddingTop: 14, marginTop: 14 }}>

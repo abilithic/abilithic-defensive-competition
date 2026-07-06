@@ -73,14 +73,18 @@ class SnapshotManager:
         }
 
     def build(self, participant_id, competition_id, phase, checks_state,
-              image_version, difficulty):
-        """Bangun objek snapshot (belum ditandatangani)."""
+              image_version, difficulty, now_ms=None):
+        """Bangun objek snapshot (belum ditandatangani).
+
+        `now_ms`: waktu terkoreksi offset server (Runtime._now_ms()), bila
+        tersedia. Field ini bernama *_server_ms; tanpa koreksi ia sebenarnya
+        cuma jam lokal VM yang bisa saja ngaco (lihat REVIEW-DAN-KONSEP-v2.md)."""
         snap = {
             "schema_version": "1.0",
             "participant_id": participant_id,
             "competition_id": competition_id,
             "phase": phase,
-            "taken_at_server_ms": int(time.time() * 1000),
+            "taken_at_server_ms": int(now_ms) if now_ms is not None else int(time.time() * 1000),
             "image_version": image_version,
             "difficulty": difficulty,
             "checks_state": [

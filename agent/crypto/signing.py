@@ -22,9 +22,17 @@ def sign_payload(secret: str, method: str, path: str, body: str,
 
 
 def build_auth_headers(participant_id: str, secret: str,
-                       method: str, path: str, body: str) -> dict:
-    """Header standar untuk endpoint agen ber-signing."""
-    timestamp = str(int(time.time() * 1000))
+                       method: str, path: str, body: str,
+                       clock_offset_ms: int = 0) -> dict:
+    """Header standar untuk endpoint agen ber-signing.
+
+    `clock_offset_ms` mengoreksi jam lokal VM terhadap jam server (lihat
+    ApiClient.sync_clock / GET /api/v1/time). Tanpa ini, VM dengan jam yang
+    ngaco (umum pada VM hasil clone/template) akan gagal lolos jendela
+    toleransi timestamp server (±5 menit) dan agen tampak "berhenti update"
+    sampai jam VM dikoreksi manual.
+    """
+    timestamp = str(int(time.time() * 1000) + int(clock_offset_ms))
     nonce = os.urandom(16).hex()
     signature = sign_payload(secret, method, path, body, timestamp, nonce)
     return {
