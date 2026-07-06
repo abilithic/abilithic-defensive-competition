@@ -73,15 +73,17 @@ reflected on a public leaderboard within seconds, no grader required.
 
 **Leaderboard** — live rank, score, and countdown, no refresh needed.
 
-<img src="assets/screenshot-leaderboard.png" alt="abilithic DHC — leaderboard" width="820"/>
+<img src="assets/Screenshot-leaderboard.png" alt="abilithic DHC — leaderboard" width="820"/>
 
 **Admin console** — create sessions, start/pause/stop, manage participants, auto-refreshing.
 
-<img src="assets/screenshot-admin.png" alt="abilithic DHC — admin console" width="820"/>
+<img src="assets/Screenshot-admin.png" alt="abilithic DHC — admin console" width="820"/>
 
-**Participant kiosk** — registration, live score, remaining time, and a hardening checklist.
+**Participant kiosk** — a companion window (not fullscreen-lock), so participants can
+still use the terminal to work while registering and tracking their score live.
 
-<img src="assets/screenshot-kiosk.png" alt="abilithic DHC — participant kiosk" width="300"/>
+<img src="assets/Screenshot-kiosk_login.png" alt="abilithic DHC — kiosk registration" width="420"/>
+<img src="assets/Screenshot-kiosk_dashboard.png" alt="abilithic DHC — kiosk hardening checklist" width="420"/>
 
 </div>
 
