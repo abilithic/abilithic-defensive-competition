@@ -13,7 +13,7 @@ insert into checks (code, title, description, points, is_penalty, must_stay_pass
   ('ufw_enabled','Aktifkan firewall UFW','Firewall UFW harus active.',10,false,false,'firewall',
     'Cek: sudo ufw status','Aktifkan: sudo ufw enable','["easy","medium","hard"]'),
   ('telnet_disabled','Matikan layanan Telnet','Tidak boleh ada layanan di port 23.',10,false,false,'service',
-    'Cek layanan port 23 (telnet).','Disable & hapus: sudo systemctl disable --now inetd; sudo apt purge telnetd','["easy","medium","hard"]'),
+    'Cek layanan port 23 (telnet).','Matikan service simulasinya: sudo systemctl disable --now dhc-telnetd','["easy","medium","hard"]'),
   ('rogue_user_removed','Hapus akun tak sah','Akun "hacker" harus dihapus.',10,false,false,'account',
     'Periksa daftar user di /etc/passwd.','Hapus: sudo deluser --remove-home hacker','["easy","medium","hard"]'),
   ('shadow_perm','Perbaiki permission /etc/shadow','/etc/shadow tidak boleh world-readable (mode 640).',10,false,false,'permission',

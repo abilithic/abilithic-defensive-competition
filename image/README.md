@@ -29,14 +29,37 @@
    ```
 7. Unggah OVA + checksum ke Releases. Bagikan link ke peserta.
 
-## Daftar celah v0.1 (5 check Easy)
+## Daftar celah (15 check, v0.3)
+
+`image/build/provision.sh` sekarang dua fase: **RESET** (bersihkan sisa
+provisioning/percobaan sebelumnya — user rogue lama, unit systemd, rule ufw
+kustom, override `ip_forward` yang ter-persist) lalu **PLANT** (tanam ulang
+semua 15 celah dari kondisi bersih itu). Aman dijalankan berkali-kali di VM
+yang sama saat testing — hasilnya selalu deterministik.
 
 | code | Kondisi rentan (yang ditanam) |
 |---|---|
 | ssh_root_disabled | `PermitRootLogin yes` di sshd_config |
 | ufw_enabled | UFW inactive |
-| telnet_disabled | telnetd terpasang & listen di port 23 |
+| telnet_disabled | listener `dhc-telnetd.service` di port 23 (lihat catatan di bawah) |
 | rogue_user_removed | user `hacker` ditambahkan |
 | shadow_perm | `/etc/shadow` di-chmod 644 |
+| passwd_perm | `/etc/passwd` di-chmod 666 |
+| empty_password_removed | user `guest2` tanpa password |
+| uid0_unique | user `rootkit` ber-UID 0 |
+| ip_forward_disabled | `net.ipv4.ip_forward=1` |
+| password_max_days | `PASS_MAX_DAYS 99999` di login.defs |
+| ssh_permitempty_disabled | `PermitEmptyPasswords yes` di sshd_config |
+| world_writable_removed | `/opt/dhc/secret.txt` di-chmod 777 |
+| suid_bash_removed | `/usr/local/bin/rootbash` (copy bash ber-bit SUID) |
+| rogue_sudo_removed | user `backdoor` ditambahkan ke grup sudo |
+| cron_backdoor_removed | `/etc/cron.d/dhc-backdoor` |
+
+> **Kenapa `telnet_disabled` tidak lagi pakai paket `telnetd`**: paket itu
+> sudah tak bisa diandalkan (kadang tak tersedia/tak bisa jalan lewat
+> systemd) di rilis Ubuntu modern, sehingga soal ini bisa "PASS sendiri"
+> tanpa peserta berbuat apa-apa. Diganti listener TCP minimal sendiri
+> (`dhc-telnetd.py` + `dhc-telnetd.service`) yang selalu bisa jalan di
+> versi Ubuntu berapa pun — lihat komentar di `dhc-telnetd.py`.
 
 Lihat `image/build/provision.sh`.

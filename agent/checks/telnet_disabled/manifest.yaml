@@ -7,5 +7,5 @@ must_stay_passing: false
 category: service
 difficulty_tags: [easy, medium, hard]
 hint_basic: "Cek apakah ada layanan di port 23 (telnet)."
-hint_advanced: "Disable & hapus: sudo systemctl disable --now telnetd; sudo apt purge telnetd"
+hint_advanced: "Matikan service simulasinya: sudo systemctl disable --now dhc-telnetd"
 schema_version: "1.0"

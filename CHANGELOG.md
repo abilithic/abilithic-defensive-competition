@@ -13,6 +13,25 @@ versi mengikuti [SemVer](https://semver.org) (TDD §24).
   (`web/app/admin/page.tsx`).
 
 ### Fixed
+- **Soal `telnet_disabled` bisa "PASS sendiri" tanpa peserta berbuat apa-apa**:
+  provisioning lama bergantung pada paket `telnetd`/`inetd`, yang sudah tak
+  bisa diandalkan (sering gagal terpasang / tak bisa jalan lewat systemd) di
+  Ubuntu modern — kalau gagal, tidak pernah ada apa pun yang listen di port
+  23, jadi soal ini otomatis lolos sejak awal. Diganti listener TCP minimal
+  buatan sendiri, tanpa dependensi paket telnet apa pun: `image/build/dhc-telnetd.py`
+  (service) + `image/build/dhc-telnetd.service` (unit systemd), dipasang &
+  diaktifkan oleh `provision.sh`. Peserta mematikan dengan
+  `sudo systemctl disable --now dhc-telnetd`. Hint di database
+  (`db/seed/difficulties.sql`, `agent/checks/telnet_disabled/manifest.yaml`)
+  & kunci jawaban internal diperbarui mengikuti.
+- **`provision.sh` sekarang dua fase (RESET lalu PLANT)**: sebelum menanam 15
+  celah, skrip lebih dulu membersihkan sisa provisioning/percobaan
+  sebelumnya — hapus user rogue lama, `ufw --force reset`, lepas mask/disable
+  `dhc-telnetd`, dan buang override `net.ipv4.ip_forward` yang mungkin
+  ter-persist ke `/etc/sysctl.conf`/`/etc/sysctl.d/` saat peserta melakukan
+  fix. Ini membuat provisioning deterministik walau dijalankan berkali-kali
+  di VM yang sama (skenario umum saat testing berulang sebelum lomba
+  sesungguhnya).
 - **Akar masalah "poin/timestamp tidak update otomatis"**: agent kini
   menyinkronkan jam ke server (`GET /api/v1/time`, tanpa signing) sebelum
   setiap siklus, lalu mengoreksi timestamp HMAC-nya dengan offset itu

@@ -1,13 +1,57 @@
 #!/usr/bin/env bash
 # =====================================================================
-# abilithic DHC — Provision canonical "dirty state" (v0.2 / 15 celah)
-# Menanam SEMUA celah. Tingkat kesulitan (dipilih di web) menentukan
-# subset mana yang dinilai — jadi tanam semua di sini.
+# abilithic DHC — Provision canonical "dirty state" (v0.3 / 15 celah)
+#
+# Dua fase, SELALU dijalankan berurutan tiap kali skrip ini dipanggil:
+#   FASE 1 (RESET)  — kembalikan VM ke kondisi bersih/deterministik, buang
+#                     sisa state dari provisioning/percobaan sebelumnya
+#                     (user rogue lama, unit systemd, rule ufw kustom, dst).
+#   FASE 2 (PLANT)  — tanam ulang SEMUA 15 celah dari kondisi bersih itu.
+#
+# Kenapa ada FASE 1: skrip ini sering dijalankan berkali-kali di VM yang
+# sama saat testing (bukan cuma sekali sebelum lomba) — kalau langsung
+# "plant" tanpa reset dulu, celah bisa tertimpa state sisa run/fix
+# sebelumnya (mis. unit systemd ter-mask, rule ufw custom, ip_forward
+# ter-persist di sysctl.conf) sehingga hasilnya tidak deterministik.
+# Tingkat kesulitan (dipilih di web) menentukan SUBSET mana yang dinilai —
+# jadi di sini kita tetap menanam semuanya.
+#
 # Jalankan di VM base sbg root.  PERINGATAN: hanya untuk VM lomba terisolasi.
 # =====================================================================
 set -uo pipefail
 if [[ $EUID -ne 0 ]]; then echo "Jalankan sebagai root (sudo)."; exit 1; fi
-echo "== Menanam 15 celah abilithic DHC =="
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+echo "== FASE 1/2 — RESET: membersihkan sisa provisioning sebelumnya =="
+
+# Rogue users: hapus dulu (kalau ada) supaya recreate di FASE 2 benar-benar
+# fresh (home dir, password, keanggotaan grup tidak membawa sisa state lama).
+for u in hacker guest2 backdoor; do
+  deluser --remove-home "$u" >/dev/null 2>&1 || true
+done
+userdel -f rootkit >/dev/null 2>&1 || true
+
+# UFW: buang rule kustom (bukan cuma disable) supaya rule bersih sebelum
+# dipakai lagi di lomba berikutnya.
+ufw --force reset >/dev/null 2>&1 || true
+
+# dhc-telnetd: lepas mask/disable dari percobaan fix sebelumnya, biar
+# FASE 2 bisa enable--now dengan bersih (systemctl enable gagal diam-diam
+# kalau unit sedang di-mask).
+systemctl unmask dhc-telnetd >/dev/null 2>&1 || true
+systemctl disable --now dhc-telnetd >/dev/null 2>&1 || true
+# sisa-sisa upaya lama pakai telnetd/inetd asli (kalau pernah dipasang manual)
+systemctl disable --now inetd >/dev/null 2>&1 || true
+systemctl disable --now telnetd >/dev/null 2>&1 || true
+
+# ip_forward: hapus override persisten yang mungkin ditambahkan peserta saat
+# fix (mis. "echo net.ipv4.ip_forward=0 >> /etc/sysctl.conf") — kalau
+# dibiarkan, nilai ini akan menang lagi setiap kali VM reboot walau FASE 2
+# sudah men-set ulang runtime value-nya.
+sed -i '/^net\.ipv4\.ip_forward/d' /etc/sysctl.conf 2>/dev/null || true
+grep -rl '^net\.ipv4\.ip_forward' /etc/sysctl.d/ 2>/dev/null | xargs -r sed -i '/^net\.ipv4\.ip_forward/d' || true
+
+echo "== FASE 2/2 — PLANT: menanam 15 celah dari kondisi bersih =="
 
 # 1 ssh_root_disabled -> PermitRootLogin yes
 if [[ -f /etc/ssh/sshd_config ]]; then
@@ -26,9 +70,14 @@ fi
 apt-get install -y ufw >/dev/null 2>&1 || true
 ufw --force disable >/dev/null 2>&1 || true
 
-# 3 telnet_disabled -> pasang telnetd (best-effort; mungkin gagal di 26.04)
-apt-get install -y telnetd >/dev/null 2>&1 || apt-get install -y inetutils-telnetd >/dev/null 2>&1 || true
-systemctl enable --now inetd 2>/dev/null || systemctl enable --now telnetd 2>/dev/null || true
+# 3 telnet_disabled -> listener port 23 SENDIRI (bukan paket telnetd, lihat
+# dhc-telnetd.py — paket telnetd/inetd asli sudah tidak dapat diandalkan di
+# rilis Ubuntu modern, sehingga soal ini dulu bisa "PASS sendiri" tanpa
+# peserta berbuat apa-apa).
+install -m 755 "$SCRIPT_DIR/dhc-telnetd.py" /usr/local/sbin/dhc-telnetd.py
+install -m 644 "$SCRIPT_DIR/dhc-telnetd.service" /etc/systemd/system/dhc-telnetd.service
+systemctl daemon-reload
+systemctl enable --now dhc-telnetd
 
 # 4 rogue_user_removed -> user 'hacker'
 id hacker >/dev/null 2>&1 || { useradd -m -s /bin/bash hacker 2>/dev/null || true; echo 'hacker:password123' | chpasswd 2>/dev/null || true; }
@@ -71,5 +120,6 @@ cat > /etc/cron.d/dhc-backdoor <<'EOF'
 * * * * * root /bin/true
 EOF
 
-echo "== Selesai. 15 celah tertanam (sebagian telnet bisa gagal di 26.04 — normal). =="
+echo "== Selesai. 15 celah tertanam dari kondisi bersih. =="
+echo "   Verifikasi cepat listener telnet: ss -ltnp | grep ':23 '"
 echo "   Catat image_version & hitung baseline hash sebelum export OVA."
