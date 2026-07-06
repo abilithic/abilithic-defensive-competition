@@ -1,6 +1,6 @@
 code: ssh_root_disabled
-title: "Nonaktifkan SSH root login"
-description: "PermitRootLogin harus 'no' di /etc/ssh/sshd_config"
+title: "Nonaktifkan Login Root melalui SSH"
+description: "Konfigurasi SSH tidak boleh mengizinkan autentikasi root secara langsung; parameter PermitRootLogin pada /etc/ssh/sshd_config harus bernilai \"no\"."
 points: 10
 is_penalty: false
 must_stay_passing: false

@@ -1,6 +1,6 @@
 code: shadow_perm
-title: "Perbaiki permission /etc/shadow"
-description: "/etc/shadow tidak boleh world-readable (mode 640 atau lebih ketat)"
+title: "Perbaiki Izin Akses Berkas /etc/shadow"
+description: "Berkas /etc/shadow tidak boleh dapat dibaca oleh pengguna lain (world-readable); izin akses yang benar adalah mode 640 atau yang lebih ketat."
 points: 10
 is_penalty: false
 must_stay_passing: false

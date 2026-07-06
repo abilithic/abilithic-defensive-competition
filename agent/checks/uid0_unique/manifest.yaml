@@ -1,11 +1,11 @@
 code: uid0_unique
-title: "Hanya root ber-UID 0"
-description: "Tidak boleh ada akun selain root yang memiliki UID 0"
+title: "Pastikan Hanya Root yang Memiliki UID 0"
+description: "Tidak boleh ada akun selain root yang memiliki User ID (UID) bernilai 0, karena hal tersebut setara dengan hak akses root."
 points: 10
 is_penalty: false
 must_stay_passing: false
 category: account
 difficulty_tags: [medium, hard]
 hint_basic: "Cek UID 0 di /etc/passwd — hanya root yang boleh."
-hint_advanced: "Hapus akun UID 0 palsu: sudo userdel <user>"
+hint_advanced: "Hapus akun UID 0 palsu: sudo userdel -f <user>  (WAJIB pakai -f: userdel biasa menolak dengan \"user is currently used by process\" karena akun ini berbagi UID 0 dengan root, dan root selalu punya banyak proses berjalan)"
 schema_version: "1.0"

@@ -116,6 +116,19 @@ td.rank { font-weight: 800; width: 54px; }
 td.score { font-weight: 800; color: var(--acc2); text-align: right; font-variant-numeric: tabular-nums; }
 tr.top1 { background: linear-gradient(90deg, rgba(255,210,63,.08), transparent 70%); }
 tr.top1 td.rank { color: var(--gold); text-shadow: 0 0 12px rgba(255,210,63,.5); }
+
+/* Baris skor bisa diklik -> tampilkan rincian soal per peserta (transparansi) */
+tr.score-row { cursor: pointer; }
+.detail-caret { display: inline-block; margin-left: 8px; font-size: 10px; color: var(--mut); vertical-align: 1px; }
+tr.detail-row td { background: var(--bg2); border-radius: 0 0 12px 12px; padding: 14px 16px; }
+tr.detail-row:hover { background: transparent; }
+.detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 6px 14px; }
+.detail-item { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 5px 0; }
+.detail-item.pass { color: var(--fg); }
+.detail-item.fail { color: var(--mut); }
+.detail-item .detail-icon { width: 16px; text-align: center; font-weight: 800; }
+.detail-item.pass .detail-icon { color: var(--ok); }
+.detail-item.fail .detail-icon { color: var(--mut); }
 .code { font-family: ui-monospace, "SF Mono", monospace; background: #0c1220; border: 1px solid var(--line);
   padding: 3px 9px; border-radius: 7px; font-size: 13px; letter-spacing: .5px; }
 
@@ -130,19 +143,4 @@ tr.top1 td.rank { color: var(--gold); text-shadow: 0 0 12px rgba(255,210,63,.5);
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* Skeleton shimmer — dipakai saat memuat data pertama kali, terasa lebih
-   "hidup" dibanding teks "Memuat…" polos. */
-.skel-row { height: 16px; border-radius: 6px; background: linear-gradient(90deg, var(--line) 25%, #2c3859 37%, var(--line) 63%);
-  background-size: 400% 100%; animation: shimmer 1.4s ease infinite; }
-@keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
-
-/* Toast */
-.toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
-  background: var(--card2); border: 1px solid var(--line); color: var(--fg);
-  padding: 12px 18px; border-radius: 12px; box-shadow: var(--shadow); z-index: 50; font-size: 14px;
-  animation: pop .2s ease; }
-.toast.err { border-color: rgba(255,93,93,.5); }
-.toast.ok { border-color: rgba(47,214,127,.5); }
-@keyframes pop { from { opacity: 0; transform: translate(-50%, 8px); } }
-
-/* Login screen */
-.login { max-width: 380px; margin: 8vh auto 0; }
+   "hidup" dibanding teks "Mem

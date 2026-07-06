@@ -4,6 +4,48 @@ Semua perubahan penting dicatat di sini. Format: [Keep a Changelog](https://keep
 versi mengikuti [SemVer](https://semver.org) (TDD §24).
 
 ## [Unreleased]
+### Added
+- **Transparansi skor di leaderboard publik**: baris/skor peserta kini bisa
+  diklik untuk membuka rincian per-soal (judul + status lulus/belum, plus
+  ringkasan "X / Y soal selesai") — sebelumnya leaderboard cuma menampilkan
+  nama & angka total. Endpoint baru (publik, read-only, tanpa jawaban/command):
+  `GET /api/v1/leaderboard/detail?participant=<id>` (`web/app/api/v1/leaderboard/detail/route.ts`).
+  UI: `web/app/page.tsx` (baris expand/collapse), `web/app/globals.css`
+  (`.detail-row`, `.detail-grid`, dst.).
+- **Hint di kiosk kini klik-untuk-tampil**: sebelumnya hint langsung tampil
+  otomatis untuk soal yang belum lulus; sekarang disembunyikan default dan
+  baru muncul saat baris soal diklik (klik lagi untuk sembunyikan). Status
+  buka/tutup disimpan per soal di sisi klien (`agent/ui/templates/index.html`),
+  bertahan walau daftar soal di-render ulang tiap 2 detik.
+
+### Fixed
+- **Command perbaikan `empty_password_removed` & `uid0_unique` bisa gagal
+  walau sudah "benar" secara logika**, ditemukan setelah dilaporkan pengguna
+  mencoba kunci jawaban tapi soal tetap tidak PASS:
+  - `uid0_unique`: `sudo userdel rootkit` (tanpa `-f`) ditolak dengan
+    `user is currently used by process ...` — false-positive, karena akun
+    `rootkit` sengaja berbagi UID 0 dengan `root` (`useradd -o -u 0`), dan
+    `userdel` mendeteksi "sedang dipakai" dengan mencocokkan UID, bukan nama
+    user; root selalu punya banyak proses berjalan. Fix: **wajib** pakai
+    `sudo userdel -f rootkit`.
+  - `empty_password_removed`: `sudo passwd -l guest2` bisa tidak konsisten
+    mengubah field password di `/etc/shadow` pada akun yang field-nya BENAR-
+    BENAR kosong (bukan sekadar terkunci). Diganti rekomendasi utama:
+    `sudo usermod -p '!' guest2` — menulis langsung field password ke `!`
+    tanpa logika toggle apa pun, hasilnya pasti tidak kosong lagi.
+  - Diperbarui di `agent/checks/uid0_unique/manifest.yaml`,
+    `agent/checks/empty_password_removed/manifest.yaml`,
+    `db/seed/difficulties.sql`, dan kunci jawaban internal panitia.
+
+### Changed
+- **Teks 15 soal hardening dibuat lebih profesional**: `title` & `description`
+  tiap check (`agent/checks/*/manifest.yaml`, disinkronkan ke
+  `db/seed/difficulties.sql`) ditulis ulang jadi kalimat formal lengkap,
+  konsisten gaya bahasanya antar-soal (mis. "Nonaktifkan Login Root melalui
+  SSH" — sebelumnya "Nonaktifkan SSH root login"). `hint_basic` &
+  `hint_advanced` (termasuk command perbaikan) TIDAK dihapus/diubah maknanya
+  — beberapa hanya disinkronkan agar identik antara database & agent.
+
 ### Fixed
 - **Jendela kiosk blank setelah restart VM** (`agent/kiosk.py`), dua penyebab
   sekaligus:

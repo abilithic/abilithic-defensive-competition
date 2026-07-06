@@ -1,6 +1,6 @@
 code: telnet_disabled
-title: "Matikan layanan Telnet"
-description: "Tidak boleh ada layanan listening di port 23 (telnet)"
+title: "Nonaktifkan Layanan Telnet"
+description: "Tidak boleh terdapat layanan yang listening pada port TCP 23 (Telnet), mengingat protokol ini mengirimkan kredensial dalam bentuk plaintext."
 points: 10
 is_penalty: false
 must_stay_passing: false

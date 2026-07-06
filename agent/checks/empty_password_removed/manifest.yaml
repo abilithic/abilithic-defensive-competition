@@ -1,11 +1,11 @@
 code: empty_password_removed
-title: "Hapus akun berpassword kosong"
-description: "Tidak boleh ada akun login dengan password kosong di /etc/shadow"
+title: "Hapus Akun dengan Kata Sandi Kosong"
+description: "Tidak boleh terdapat akun login dengan kata sandi kosong pada berkas /etc/shadow."
 points: 10
 is_penalty: false
 must_stay_passing: false
 category: account
 difficulty_tags: [medium, hard]
 hint_basic: "Cek /etc/shadow — akun dengan field password kosong berbahaya."
-hint_advanced: "Kunci/hapus akun tsb: sudo passwd -l <user>  atau  sudo deluser <user>"
+hint_advanced: "Set field password langsung: sudo usermod -p '!' <user>  (paling pasti — passwd -l bisa tidak konsisten pada akun berpassword kosong). Alternatif: sudo deluser --remove-home <user>"
 schema_version: "1.0"

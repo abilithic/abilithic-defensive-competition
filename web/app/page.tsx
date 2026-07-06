@@ -1,11 +1,15 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase";
 
 type Row = { participant_id: string; full_name: string; school: string | null;
   total_score: number; rank: number; status: string };
 type Comp = { id: string; name: string; difficulty: string; status: string;
   ends_at_ms: number | null; server_time_ms: number } | null;
+type CheckItem = { code: string; title: string; category: string | null;
+  points: number; passed: boolean; scored_points: number };
+type Detail = { participant: { full_name: string; school: string | null; status: string };
+  difficulty: string | null; passed_count: number; total_count: number; checks: CheckItem[] };
 
 const STATUS_LABEL: Record<string, string> = {
   waiting: "Menunggu", running: "Berlangsung", paused: "Jeda", ended: "Selesai", archived: "Arsip",
@@ -19,6 +23,25 @@ export default function Leaderboard() {
   const [remaining, setRemaining] = useState<number | null>(null);
   const [loaded, setLoaded] = useState(false);
   const offsetRef = useRef(0);
+
+  // Detail per-check saat baris/skor peserta diklik -- supaya bukan cuma
+  // nama & angka total yang kelihatan, tapi transparan soal mana yang sudah
+  // benar & mana yang belum (lihat /api/v1/leaderboard/detail).
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [detailCache, setDetailCache] = useState<Record<string, Detail>>({});
+  const [detailLoading, setDetailLoading] = useState<string | null>(null);
+
+  async function toggleDetail(pid: string) {
+    if (openId === pid) { setOpenId(null); return; }
+    setOpenId(pid);
+    if (detailCache[pid]) return; // sudah pernah di-fetch, pakai cache
+    setDetailLoading(pid);
+    try {
+      const r = await fetch(`/api/v1/leaderboard/detail?participant=${pid}`, { cache: "no-store" });
+      const j = await r.json();
+      setDetailCache((d) => ({ ...d, [pid]: j }));
+    } catch { /* diam */ } finally { setDetailLoading((cur) => (cur === pid ? null : cur)); }
+  }
 
   async function load() {
     try {
@@ -97,18 +120,52 @@ export default function Leaderboard() {
               </tr>
             ))}
             {loaded && rows.length === 0 && <tr><td colSpan={4} className="empty">Belum ada peserta terdaftar.</td></tr>}
-            {rows.map((r) => (
-              <tr key={r.participant_id} className={r.rank === 1 ? "top1" : ""}>
-                <td className="rank">{r.rank <= 3 ? MEDAL[r.rank - 1] : r.rank}</td>
-                <td>
-                  <span style={{ fontWeight: 600 }}>{r.full_name}</span>
-                  {r.status === "offline" && <span className="small muted"> · offline</span>}
-                  {r.status === "disqualified" && <span className="small" style={{ color: "var(--danger)" }}> · DQ</span>}
-                </td>
-                <td className="muted">{r.school ?? "—"}</td>
-                <td className="score">{r.total_score}</td>
-              </tr>
-            ))}
+            {rows.map((r) => {
+              const isOpen = openId === r.participant_id;
+              const d = detailCache[r.participant_id];
+              return (
+                <Fragment key={r.participant_id}>
+                  <tr className={(r.rank === 1 ? "top1 " : "") + "score-row"}
+                    onClick={() => toggleDetail(r.participant_id)} title="Klik untuk lihat rincian soal">
+                    <td className="rank">{r.rank <= 3 ? MEDAL[r.rank - 1] : r.rank}</td>
+                    <td>
+                      <span style={{ fontWeight: 600 }}>{r.full_name}</span>
+                      {r.status === "offline" && <span className="small muted"> · offline</span>}
+                      {r.status === "disqualified" && <span className="small" style={{ color: "var(--danger)" }}> · DQ</span>}
+                    </td>
+                    <td className="muted">{r.school ?? "—"}</td>
+                    <td className="score">
+                      {r.total_score}
+                      <span className="detail-caret">{isOpen ? "▲" : "▼"}</span>
+                    </td>
+                  </tr>
+                  {isOpen && (
+                    <tr className="detail-row">
+                      <td colSpan={4}>
+                        {detailLoading === r.participant_id && !d && (
+                          <div className="small muted">Memuat rincian…</div>
+                        )}
+                        {d && (
+                          <>
+                            <div className="small muted" style={{ marginBottom: 8 }}>
+                              {d.passed_count} / {d.total_count} soal selesai
+                            </div>
+                            <div className="detail-grid">
+                              {d.checks.map((c) => (
+                                <div key={c.code} className={"detail-item " + (c.passed ? "pass" : "fail")}>
+                                  <span className="detail-icon">{c.passed ? "✔" : "✗"}</span>
+                                  <span>{c.title}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  )}
+                </Fragment>
+              );
+            })}
           </tbody>
         </table>
       </div>

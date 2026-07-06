@@ -36,7 +36,11 @@
     .row{display:flex;justify-content:space-between;align-items:center;padding:13px 4px;border-bottom:1px solid var(--line)}
     .row:last-child{border-bottom:0}
     .chk-title{font-weight:600}
-    .hint{font-size:12px;color:var(--mut);margin-top:3px;max-width:52ch}
+    .hint{font-size:12px;color:var(--mut);margin-top:5px;max-width:52ch;padding:8px 10px;
+      background:#0c1220;border:1px solid var(--line);border-radius:8px}
+    .hint-toggle{font-size:11px;font-weight:700;color:var(--acc);margin-left:8px;
+      cursor:pointer;user-select:none}
+    .row.has-hint{cursor:pointer}
     .pill{font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;background:#232d47;color:var(--mut)}
     .ok{color:var(--ok)} .warnc{color:var(--warn)} .muted{color:var(--mut)}
     .tag{display:inline-block;font-size:12px;font-weight:700;padding:4px 11px;border-radius:999px}
@@ -135,6 +139,30 @@ function updateConn(st){
   else { cls='warn'; label='Menyambung…'; }
   dot.className='dot '+cls; txt.textContent=label;
 }
+// Hint disembunyikan default, muncul/hilang saat baris soal diklik. Disimpan
+// di Set terpisah (bukan cuma class CSS) karena #checks di-render ULANG
+// setiap poll (2 detik) -- kalau cuma toggle class, status buka/tutup akan
+// ke-reset tiap kali poll jalan. code jadi key supaya tetap konsisten
+// walau urutan/isi checks berubah antar-poll.
+const openHints = new Set();
+function toggleHint(code){
+  if(openHints.has(code)) openHints.delete(code); else openHints.add(code);
+  renderChecks(lastChecks);
+}
+let lastChecks = [];
+function renderChecks(checks){
+  lastChecks = checks;
+  document.getElementById('checks').innerHTML = checks.map(c=>{
+    const icon=c.passed?'<span class="ok">✔ Selesai</span>':'<span class="warnc">◻ Belum</span>';
+    const hasHint = !c.passed && !!c.hint;
+    const isOpen = hasHint && openHints.has(c.code);
+    const toggleLabel = hasHint ? `<span class="hint-toggle">${isOpen?'▾ sembunyikan':'▸ lihat hint'}</span>` : '';
+    const hintBox = isOpen ? `<div class="hint">${c.hint}</div>` : '';
+    const rowAttrs = hasHint ? `class="row has-hint" onclick="toggleHint('${c.code}')"` : `class="row"`;
+    return `<div ${rowAttrs}><div><div class="chk-title">${c.title||c.code}${toggleLabel}</div>${hintBox}</div>
+      <div style="text-align:right;white-space:nowrap">${icon} <span class="pill">+${c.points}</span></div></div>`;
+  }).join('');
+}
 async function doRefresh(){
   const b=document.getElementById('btn-refresh'); b.disabled=true; const old=b.textContent; b.textContent='↻ Menyinkronkan…';
   try{ const st=await (await fetch('/refresh',{method:'POST'})).json(); updateConn(st); await poll(); }
@@ -156,12 +184,7 @@ async function poll(){
     }
     if(st.checks&&st.checks.length){
       document.getElementById('checks-card').classList.remove('hidden');
-      document.getElementById('checks').innerHTML=st.checks.map(c=>{
-        const icon=c.passed?'<span class="ok">✔ Selesai</span>':'<span class="warnc">◻ Belum</span>';
-        const hint=(!c.passed&&c.hint)?`<div class="hint">${c.hint}</div>`:'';
-        return `<div class="row"><div><div class="chk-title">${c.title||c.code}</div>${hint}</div>
-          <div style="text-align:right;white-space:nowrap">${icon} <span class="pill">+${c.points}</span></div></div>`;
-      }).join('');
+      renderChecks(st.checks);
     }
   }catch(e){
     document.getElementById('dot').className='dot err';

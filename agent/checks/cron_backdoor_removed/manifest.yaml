@@ -1,6 +1,6 @@
 code: cron_backdoor_removed
-title: "Hapus cron job backdoor"
-description: "File cron mencurigakan /etc/cron.d/dhc-backdoor harus dihapus"
+title: "Hapus Cron Job Backdoor"
+description: "Berkas terjadwal /etc/cron.d/dhc-backdoor merupakan mekanisme persistence yang tidak sah dan harus dihapus."
 points: 10
 is_penalty: false
 must_stay_passing: false
