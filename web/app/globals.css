@@ -142,6 +142,3 @@ tr.detail-row:hover { background: transparent; }
 .spinner { width: 18px; height: 18px; border: 2px solid var(--line); border-top-color: var(--acc);
   border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; }
 @keyframes spin { to { transform: rotate(360deg); } }
-
-/* Skeleton shimmer — dipakai saat memuat data pertama kali, terasa lebih
-   "hidup" dibanding teks "Mem
