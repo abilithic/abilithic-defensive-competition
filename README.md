@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="assets/abilithic-icon-256.png" alt="abilithic DHC" width="120"/>
+<img src="assets/blueforge-icon-256.png" alt="BlueForge" width="120"/>
 
-# 🛡️ abilithic DHC
+# 🛡️ BlueForge
 
 ### Defensive Hardening Competition Platform — *defend the box, not just capture the flag.*
 
@@ -16,10 +16,10 @@ Free and open source, self-hosted on Vercel + Supabase.
 [![Python](https://img.shields.io/badge/agent-Python%203.10%2B-3776ab.svg)]()
 [![Next.js](https://img.shields.io/badge/web-Next.js%20%2F%20Vercel-black.svg)](https://vercel.com)
 [![Supabase](https://img.shields.io/badge/db-Supabase%20Realtime-3fcf8e.svg)](https://supabase.com)
-[![Build](https://img.shields.io/github/actions/workflow/status/abilithic/abilithic-defensive-competition/ci.yml)]()
+[![Build](https://img.shields.io/github/actions/workflow/status/n0xnull/BlueForge/ci.yml)]()
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Abil%20Khosim-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/abil-khosim-itsec/)
 
-<img src="assets/abilithic-horizontal-1200.png" alt="abilithic DHC" width="520"/>
+<img src="assets/blueforge-horizontal-1200.png" alt="BlueForge" width="520"/>
 
 [⬇️ Quickstart](#-quickstart) · [✨ Features](#-key-features) · [⚙️ How it works](#️-how-it-works) · [📖 Technical Design](docs/TECHNICAL-DESIGN.md) · [🧯 Troubleshooting](#-troubleshooting-organizer--participant-vm) · [⚠️ Disclaimer](DISCLAIMER.md)
 
@@ -35,7 +35,7 @@ around with a checklist, SSH into every VM, and grade hardening steps by
 hand. Scores land minutes or hours after the fact, and participants get no
 live feedback on what they've actually fixed.
 
-**abilithic DHC** is a **defensive** (blue-team / system-hardening)
+**BlueForge** is a **defensive** (blue-team / system-hardening)
 competition platform, closer to CyberPatriot than to a red-team CTF.
 Participants receive a deliberately-vulnerable Ubuntu VM and a time limit;
 every genuine fix — SSH hardened, firewall enabled, rogue accounts removed,
@@ -73,17 +73,17 @@ reflected on a public leaderboard within seconds, no grader required.
 
 **Leaderboard** — live rank, score, and countdown, no refresh needed.
 
-<img src="assets/Screenshot-leaderboard.png" alt="abilithic DHC — leaderboard" width="820"/>
+<img src="assets/Screenshot-leaderboard.png" alt="BlueForge — leaderboard" width="820"/>
 
 **Admin console** — create sessions, start/pause/stop, manage participants, auto-refreshing.
 
-<img src="assets/Screenshot-admin.png" alt="abilithic DHC — admin console" width="820"/>
+<img src="assets/Screenshot-admin.png" alt="BlueForge — admin console" width="820"/>
 
 **Participant kiosk** — a companion window (not fullscreen-lock), so participants can
 still use the terminal to work while registering and tracking their score live.
 
-<img src="assets/Screenshot-kiosk_login.png" alt="abilithic DHC — kiosk registration" width="420"/>
-<img src="assets/Screenshot-kiosk_dashboard.png" alt="abilithic DHC — kiosk hardening checklist" width="420"/>
+<img src="assets/Screenshot-kiosk_login.png" alt="BlueForge — kiosk registration" width="420"/>
+<img src="assets/Screenshot-kiosk_dashboard.png" alt="BlueForge — kiosk hardening checklist" width="420"/>
 
 </div>
 
@@ -147,7 +147,7 @@ autostart on VM boot).
 ## ⚙️ How it Works
 
 ```
-[ participant VM: abilithic-agent ] --HTTPS (polling, signed)--> [ Next.js /v1 API ]
+[ participant VM: blueforge-agent ] --HTTPS (polling, signed)--> [ Next.js /v1 API ]
                                                                           |
                                                                    [ Supabase: Postgres + Realtime ]
                                                                           |
@@ -191,34 +191,34 @@ participant VM. Full step-by-step (Bahasa Indonesia) lives in
 # clear shell history first — a cloned VM shouldn't leak the previous user's commands
 cat /dev/null > ~/.bash_history && history -c && history -w
 
-cd ~/abilithic-defensive-competition
+cd ~/BlueForge
 git pull
 sudo bash image/build/provision.sh   # plants the 15 intentional vulnerabilities
 ```
 
 **Pulling a code update onto an already-installed VM** — the kiosk/agent
 that actually runs at boot is a **separate copy** installed to
-`/opt/abilithic-agent/` by `install-kiosk.sh`, not the git checkout itself.
+`/opt/blueforge-agent/` by `install-kiosk.sh`, not the git checkout itself.
 `git pull` alone does **not** update what's running — you must resync:
 ```bash
-cd ~/abilithic-defensive-competition
+cd ~/BlueForge
 git pull
 sudo bash agent/kiosk/install-kiosk.sh   # resyncs code into /opt + restarts the service
-sudo systemctl restart abilithic-agent
+sudo systemctl restart blueforge-agent
 ```
 
 **Kiosk window accidentally closed by a participant:** `kiosk.py` now
 auto-reopens the window on its own within ~2 seconds — no action needed. If
-the window is ever truly stuck, double-click the **"Restart abilithic DHC"**
+the window is ever truly stuck, double-click the **"Restart BlueForge"**
 shortcut on the Desktop (no terminal required), or run
-`bash /opt/abilithic-agent/kiosk/restart-kiosk.sh`.
+`bash /opt/blueforge-agent/kiosk/restart-kiosk.sh`.
 
 **Common diagnostic commands:**
 ```bash
-systemctl status abilithic-agent dhc-telnetd   # are the services alive?
+systemctl status blueforge-agent dhc-telnetd   # are the services alive?
 ps aux | grep -E "kiosk.py|main.py"            # is the kiosk/agent actually running?
 journalctl --user -b | grep -i -E "kiosk|webview|gtk"  # kiosk autostart logs this boot
-diff ~/abilithic-defensive-competition/agent/kiosk.py /opt/abilithic-agent/kiosk.py  # in sync?
+diff ~/BlueForge/agent/kiosk.py /opt/blueforge-agent/kiosk.py  # in sync?
 ```
 
 ## ⚠️ Disclaimer
@@ -229,7 +229,7 @@ training purposes. **Isolated/air-gapped competition networks only** — see
 
 ## 📄 License
 
-[MIT](LICENSE) © 2026 abilithic.
+[MIT](LICENSE) © 2026 Abil Khosim.
 
 ---
 
@@ -243,10 +243,10 @@ realtime, education, capture-the-flag-alternative -->
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Abil%20Khosim-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/abil-khosim-itsec/)
 
-*abilithic DHC* is an original project by Abil Khosim, part of the Abilithic
-family (Recon · Scan · DHC). Released under the MIT License — please keep
-this attribution when reusing or redistributing.
+*BlueForge* is an original project by Abil Khosim, part of the **NoxNull**
+toolkit (Fathom · Flare · BlueForge · Cove). Released under the MIT License —
+please keep this attribution when reusing or redistributing.
 
-<sub>Security, built like stone. 🛡️</sub>
+<sub>Stop collecting flags. Start patching real vulnerabilities. 🛡️</sub>
 
 </div>

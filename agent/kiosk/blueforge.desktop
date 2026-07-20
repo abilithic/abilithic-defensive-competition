@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=Application
-Name=abilithic DHC
+Name=BlueForge
 Comment=Defensive Hardening Competition
-Exec=/usr/bin/python3 /opt/abilithic-agent/kiosk.py
-Icon=/opt/abilithic-agent/kiosk/abilithic-icon.png
+Exec=/usr/bin/python3 /opt/blueforge-agent/kiosk.py
+Icon=/opt/blueforge-agent/kiosk/blueforge-icon.png
 Terminal=false
 X-GNOME-Autostart-enabled=true
 X-GNOME-Autostart-Delay=5

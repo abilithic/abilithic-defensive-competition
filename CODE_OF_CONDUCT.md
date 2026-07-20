@@ -17,7 +17,7 @@ pelecehan publik/privat, mempublikasikan informasi pribadi orang lain tanpa izin
 
 ## Penegakan
 
-Laporkan perilaku tidak pantas ke **conduct@abilithic.example** (ganti dengan email resmi).
+Laporkan perilaku tidak pantas ke **conduct@blueforge.example** (ganti dengan email resmi).
 Semua laporan ditinjau & diselidiki secara adil dan rahasia.
 
 Diadaptasi dari [Contributor Covenant](https://www.contributor-covenant.org), v2.1.

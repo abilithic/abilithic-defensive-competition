@@ -2,11 +2,11 @@
 
 ## Responsible Disclosure
 
-abilithic DHC adalah proyek **keamanan siber**, jadi kami menanggapi laporan celah dengan serius.
+BlueForge adalah proyek **keamanan siber**, jadi kami menanggapi laporan celah dengan serius.
 
 **Jangan** melaporkan celah keamanan melalui GitHub Issue publik.
 
-Sebaliknya, kirim email ke: **security@abilithic.example** (ganti dengan email resmi kamu)
+Sebaliknya, kirim email ke: **security@blueforge.example** (ganti dengan email resmi kamu)
 dengan detail:
 - Deskripsi celah & dampaknya
 - Langkah reproduksi

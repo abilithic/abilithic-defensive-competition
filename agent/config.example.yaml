@@ -1,7 +1,7 @@
-# abilithic-agent — konfigurasi (salin ke config.yaml lalu sesuaikan)
+# blueforge-agent — konfigurasi (salin ke config.yaml lalu sesuaikan)
 
 # URL portal web (Next.js) — endpoint /v1 ada di bawah URL ini.
-# Contoh produksi: https://abilithic-dhc.vercel.app
+# Contoh produksi: https://blueforge.vercel.app
 portal_url: "http://localhost:3000"
 
 # Versi image VM ini (harus cocok dengan yang dikenali server).
@@ -16,7 +16,7 @@ poll_interval_sec: 15
 local_ui_port: 9090
 
 # Folder penyimpanan state lokal (token, antrian store-and-forward).
-state_dir: "/var/lib/abilithic-agent"
+state_dir: "/var/lib/blueforge-agent"
 
 # Level log: DEBUG | INFO | WARN | ERROR
 log_level: "INFO"

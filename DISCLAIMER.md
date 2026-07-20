@@ -1,6 +1,6 @@
 # Disclaimer
 
-**abilithic DHC** sengaja menanam celah keamanan (SSH root login, firewall
+**BlueForge** sengaja menanam celah keamanan (SSH root login, firewall
 mati, akun rogue, SUID backdoor, dll — lihat `image/build/provision.sh`) ke
 dalam VM Ubuntu agar peserta berlatih *hardening*. Ini dibuat **khusus untuk
 pelatihan defensif di lingkungan terisolasi**, bukan untuk produksi.

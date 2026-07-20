@@ -1,13 +1,13 @@
 [Unit]
-Description=abilithic DHC Agent
+Description=BlueForge Agent
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 Type=simple
 # Sesuaikan path instalasi agen
-WorkingDirectory=/opt/abilithic-agent
-ExecStart=/usr/bin/python3 /opt/abilithic-agent/main.py
+WorkingDirectory=/opt/blueforge-agent
+ExecStart=/usr/bin/python3 /opt/blueforge-agent/main.py
 Restart=always
 RestartSec=5
 User=root

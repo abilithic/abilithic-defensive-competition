@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""abilithic-agent — entrypoint (TDD §8, §35).
+"""blueforge-agent — entrypoint (TDD §8, §35).
 
 Mengorkestrasi modul: StateManager, CheckRunner, ScoreEngine, ApiClient,
 SnapshotManager, Logger, dan Local UI (Flask). Pola: agen POLLING ke server.

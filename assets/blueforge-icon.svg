@@ -1,0 +1,35 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="BlueForge icon">
+  <defs>
+    <linearGradient id="panelBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#161e29"/>
+      <stop offset="1" stop-color="#0c1118"/>
+    </linearGradient>
+    <linearGradient id="steelGrad" x1="0.15" y1="0" x2="0.85" y2="0.3">
+      <stop offset="0" stop-color="#B8C2D1"/>
+      <stop offset="0.55" stop-color="#8B95A5"/>
+      <stop offset="1" stop-color="#5A6472"/>
+    </linearGradient>
+    <linearGradient id="boltGrad" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#7AC8FF"/>
+      <stop offset="0.5" stop-color="#2E7DFF"/>
+      <stop offset="1" stop-color="#1650C4"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="252" height="252" rx="54.0" fill="url(#panelBg)"/>
+  <rect x="2.5" y="2.5" width="251" height="251" rx="53.5" fill="none" stroke="#FFFFFF" stroke-opacity="0.06" stroke-width="1"/>
+
+  <!-- anvil: horn + top face -->
+  <polygon points="70,120 34,131 70,138 186,138 186,120" fill="url(#steelGrad)"/>
+  <!-- anvil: waist -->
+  <polygon points="96,138 160,138 148,176 108,176" fill="url(#steelGrad)"/>
+  <!-- anvil: base -->
+  <polygon points="100,176 156,176 176,212 80,212" fill="url(#steelGrad)"/>
+  <!-- shadow facets (right half darker, consistent with portfolio style) -->
+  <polygon points="128,120 186,120 186,138 128,138" fill="#0c1118" opacity="0.25"/>
+  <polygon points="128,138 160,138 148,176 128,176" fill="#0c1118" opacity="0.25"/>
+  <polygon points="128,176 156,176 176,212 128,212" fill="#0c1118" opacity="0.25"/>
+
+  <!-- electric spark / bolt striking the anvil -->
+  <polygon points="140,52 116,118 137,118 110,196 153,113 130,113"
+           fill="url(#boltGrad)" stroke="#0c1118" stroke-width="2" stroke-linejoin="round"/>
+</svg>

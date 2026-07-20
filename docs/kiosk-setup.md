@@ -1,7 +1,7 @@
 # Mode Kiosk — Agent jadi "Aplikasi" (v0.2)
 
 Tujuan: peserta **tidak** perlu buka browser/localhost manual. VM dinyalakan →
-**aplikasi abilithic DHC muncul otomatis sebagai jendela panel** → isi Nama + Kode Sesi →
+**aplikasi BlueForge muncul otomatis sebagai jendela panel** → isi Nama + Kode Sesi →
 setelah START jadi **live dashboard** (skor, timer, checklist, hint).
 
 > **PENTING (companion window, bukan kunci layar):** aplikasi muncul sebagai
@@ -10,7 +10,7 @@ setelah START jadi **live dashboard** (skor, timer, checklist, hint).
 > Ini disengaja — lomba hardening butuh akses terminal & editor.
 
 ## Cara peserta mengerjakan
-1. Boot VM → panel **abilithic DHC** muncul → isi Nama + Kode Sesi → **Daftar**.
+1. Boot VM → panel **BlueForge** muncul → isi Nama + Kode Sesi → **Daftar**.
 2. Tunggu panitia **START**. Panel berubah jadi dashboard (skor, timer, checklist).
 3. Buka **Terminal** (Activities → ketik "Terminal") **di samping** panel.
 4. Perbaiki tiap tugas di checklist lewat terminal/editor. Skor naik otomatis di panel
@@ -29,23 +29,23 @@ Logika agent & scoring **tidak berubah** — kiosk hanya pembungkus tampilan (TD
 
 Dari dalam VM, di folder repo:
 ```bash
-cd ~/abilithic-defensive-competition
+cd ~/BlueForge
 git pull                                   # ambil update v0.2
 sudo bash agent/kiosk/install-kiosk.sh
 ```
 Skrip ini:
 - pasang dependency Python (+ coba pywebview, opsional),
-- salin agent ke `/opt/abilithic-agent`,
+- salin agent ke `/opt/blueforge-agent`,
 - pasang **autostart** agar app muncul saat login desktop.
 
 Lalu set URL portal (kalau belum):
 ```bash
-sudo nano /opt/abilithic-agent/config.yaml   # portal_url = URL Vercel kamu
+sudo nano /opt/blueforge-agent/config.yaml   # portal_url = URL Vercel kamu
 ```
 
 ## Uji tanpa reboot
 ```bash
-python3 /opt/abilithic-agent/kiosk.py
+python3 /opt/blueforge-agent/kiosk.py
 ```
 Aplikasi fullscreen harus muncul. Tekan **Alt+F4** (atau `pkill firefox`/`pkill -f kiosk.py`
 dari TTY lain) untuk menutup saat menguji.
@@ -65,7 +65,7 @@ Reboot → VM langsung masuk desktop → aplikasi DHC muncul otomatis. Pengalama
 
 ## Sebelum lomba: tanam celah
 ```bash
-sudo bash ~/abilithic-defensive-competition/image/build/provision.sh
+sudo bash ~/BlueForge/image/build/provision.sh
 ```
 
 ## Untuk distribusi (nanti)
@@ -75,7 +75,7 @@ peserta. Mereka cukup import & nyalakan → app langsung jalan. (Lihat `image/RE
 ## Troubleshooting
 | Masalah | Solusi |
 |---|---|
-| App tak muncul saat boot | Uji manual `python3 /opt/abilithic-agent/kiosk.py`; cek autostart ada di `~/.config/autostart/` |
+| App tak muncul saat boot | Uji manual `python3 /opt/blueforge-agent/kiosk.py`; cek autostart ada di `~/.config/autostart/` |
 | Layar putih / "tidak bisa hubungi agent" | `portal_url` salah, atau agent belum siap — tunggu beberapa detik |
 | pywebview error | Abaikan — otomatis fallback ke browser kiosk (Firefox/Chromium) |
 | Mau keluar dari kiosk | Alt+F4, atau dari TTY lain: `pkill -f kiosk.py` |

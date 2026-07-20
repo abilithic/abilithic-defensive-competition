@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =====================================================================
-# abilithic DHC — Provision canonical "dirty state" (v0.3 / 15 celah)
+# BlueForge — Provision canonical "dirty state" (v0.3 / 15 celah)
 #
 # Dua fase, SELALU dijalankan berurutan tiap kali skrip ini dipanggil:
 #   FASE 1 (RESET)  — kembalikan VM ke kondisi bersih/deterministik, buang

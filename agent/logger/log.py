@@ -1,4 +1,4 @@
-"""Structured logger untuk abilithic-agent (TDD §21).
+"""Structured logger untuk blueforge-agent (TDD §21).
 
 Level: DEBUG, INFO, WARN, ERROR (+ kategori AUDIT/SECURITY via param).
 Output JSON satu baris agar mudah dibaca admin/forensik.

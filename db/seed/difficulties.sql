@@ -1,5 +1,5 @@
 -- =====================================================================
--- abilithic DHC — Seed data (v0.2)
+-- BlueForge — Seed data (v0.2)
 -- 15 check Linux + preset tingkat (Easy 6 / Medium 11 / Hard 15).
 -- AMAN dijalankan ulang: memakai UPSERT (on conflict do update),
 -- jadi menjalankan lagi akan MEMPERBARUI check & preset yang sudah ada.

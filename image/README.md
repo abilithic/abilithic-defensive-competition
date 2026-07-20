@@ -1,4 +1,4 @@
-# Image VM — abilithic DHC
+# Image VM — BlueForge
 
 > **OVA tidak disimpan di repo** (terlalu besar). Repo hanya menyimpan **script pembangun**.
 > Link unduh OVA + checksum diumumkan di GitHub Releases / Google Drive.
@@ -12,20 +12,20 @@
 2. **Snapshot "clean baseline"** di VMware (titik balik aman).
 3. Pasang agen:
    ```bash
-   sudo mkdir -p /opt/abilithic-agent
-   sudo cp -r agent/* /opt/abilithic-agent/
-   cd /opt/abilithic-agent && sudo cp config.example.yaml config.yaml
+   sudo mkdir -p /opt/blueforge-agent
+   sudo cp -r agent/* /opt/blueforge-agent/
+   cd /opt/blueforge-agent && sudo cp config.example.yaml config.yaml
    # edit config.yaml -> portal_url ke URL produksi
    sudo apt -y install python3-pip && sudo pip3 install -r requirements.txt
-   sudo cp systemd/abilithic-agent.service /etc/systemd/system/
-   sudo systemctl daemon-reload && sudo systemctl enable --now abilithic-agent
+   sudo cp systemd/blueforge-agent.service /etc/systemd/system/
+   sudo systemctl daemon-reload && sudo systemctl enable --now blueforge-agent
    ```
 4. **Tanam celah (canonical dirty state)** menggunakan `image/build/provision.sh`
    sesuai daftar 5 check v0.1.
 5. Catat `image_version` & hitung `canonical_baseline_hash`.
 6. **Export OVA**: `File → Export to OVF/OVA`. Hitung checksum:
    ```bash
-   sha256sum abilithic-dhc-2024.04.ova
+   sha256sum blueforge-2024.04.ova
    ```
 7. Unggah OVA + checksum ke Releases. Bagikan link ke peserta.
 

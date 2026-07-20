@@ -3,7 +3,7 @@
 ## 1. Persiapan (sebelum hari-H)
 
 1. **Install VMware Workstation Player** (gratis) atau VirtualBox.
-2. **Unduh image VM** abilithic DHC dari link yang diberikan panitia (file `.ova`).
+2. **Unduh image VM** BlueForge dari link yang diberikan panitia (file `.ova`).
    - Verifikasi integritas: cocokkan **SHA256** file dengan yang diumumkan panitia.
 3. **Import** file `.ova` ke VMware: `File → Open → pilih .ova → Import`.
 4. Jalankan VM minimal sekali untuk memastikan booting normal. **Jangan** mengubah apa pun dulu.
@@ -29,6 +29,6 @@
 
 | Masalah | Solusi |
 |---|---|
-| `localhost:9090` tak terbuka | Pastikan agent jalan: `sudo systemctl status abilithic-agent` |
+| `localhost:9090` tak terbuka | Pastikan agent jalan: `sudo systemctl status blueforge-agent` |
 | "Kode sesi tidak ditemukan" | Pastikan kode benar & panitia sudah membuat sesi |
 | Skor tak naik | Cek hint di `localhost:9090`; mungkin perbaikan belum sesuai |

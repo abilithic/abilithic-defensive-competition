@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""abilithic DHC — Kiosk launcher.
+"""BlueForge — Kiosk launcher.
 
 Menjalankan agent (main.py) di latar, menunggu UI lokal siap, lalu membuka
 UI itu sebagai **jendela aplikasi companion** (BUKAN fullscreen-lock), supaya
@@ -57,7 +57,7 @@ LOADING_HTML = """<!DOCTYPE html><html><head><meta charset="utf-8">
   b{color:#eef2fb}
 </style></head><body>
   <div class="dot"></div>
-  <p><b>abilithic DHC</b></p>
+  <p><b>BlueForge</b></p>
   <p id="msg">Menghubungkan ke agent lokal...</p>
 </body></html>"""
 
@@ -80,7 +80,7 @@ _agent_proc = None
 
 def _agent_already_running():
     """Cek apakah UI lokal sudah dilayani pihak lain (mis. systemd service
-    `abilithic-agent`, yang normalnya jalan terus-menerus di instalasi
+    `blueforge-agent`, yang normalnya jalan terus-menerus di instalasi
     kiosk). Kalau sudah, kiosk.py TIDAK BOLEH menjalankan main.py sendiri --
     dua proses main.py rebutan port 9090 menyebabkan salah satunya gagal
     bind ("Address already in use") dan bisa membuat UI/registrasi
@@ -96,7 +96,7 @@ def _agent_already_running():
 def start_agent():
     """Jalankan agent (main.py) sebagai proses terpisah -- HANYA kalau belum
     ada yang melayani port 9090 (lihat _agent_already_running()). Di
-    instalasi kiosk normal, `abilithic-agent.service` (systemd) yang
+    instalasi kiosk normal, `blueforge-agent.service` (systemd) yang
     menjalankan main.py; kiosk.py di sini murni menampilkan jendelanya saja.
     Kalau dijalankan berdiri sendiri saat development (tanpa systemd
     service), kiosk.py tetap akan menjalankan main.py sendiri seperti
@@ -104,7 +104,7 @@ def start_agent():
     global _agent_proc
     if _agent_already_running():
         print("[kiosk] agent lokal sudah melayani port 9090 (mis. via "
-              "systemd abilithic-agent) -- tidak menjalankan salinan baru.",
+              "systemd blueforge-agent) -- tidak menjalankan salinan baru.",
               flush=True)
         return None
     py = sys.executable or "python3"
@@ -159,7 +159,7 @@ def open_pywebview():
     except Exception:
         return False
     try:
-        window = webview.create_window("abilithic DHC", html=LOADING_HTML,
+        window = webview.create_window("BlueForge", html=LOADING_HTML,
                                         width=460, height=880, resizable=True,
                                         background_color="#0a0e1a")
 

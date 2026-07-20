@@ -115,8 +115,8 @@ export default function Admin() {
   // ---------- render ----------
   const Brand = (
     <div className="brand">
-      <div className="logo"><img src="/abilithic-icon-256.png" alt="abilithic" /></div>
-      <div><h1>abilithic DHC · Admin</h1><div className="sub">Kelola lomba & peserta</div></div>
+      <div className="logo"><img src="/blueforge-icon-256.png" alt="BlueForge" /></div>
+      <div><h1>BlueForge · Admin</h1><div className="sub">Kelola lomba & peserta</div></div>
     </div>
   );
 

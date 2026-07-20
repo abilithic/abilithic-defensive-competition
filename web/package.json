@@ -1,8 +1,8 @@
 {
-  "name": "abilithic-dhc-web",
+  "name": "blueforge-web",
   "version": "0.1.0",
   "private": true,
-  "description": "abilithic DHC — web portal (leaderboard + admin + /v1 API)",
+  "description": "BlueForge — web portal (leaderboard + admin + /v1 API)",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

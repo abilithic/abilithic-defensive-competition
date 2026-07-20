@@ -1,5 +1,5 @@
 <!--
-  abilithic DHC — Technical Design Document (FINAL, v1.0)
+  BlueForge — Technical Design Document (FINAL, v1.0)
   Dipindahkan ke dalam repo (docs/TECHNICAL-DESIGN.md) agar benar-benar
   ter-versi & tersedia di GitHub — sebelumnya file ini hidup satu level di
   luar repo dan tidak pernah ter-upload. Isi di bawah adalah dokumen asli,
@@ -8,10 +8,10 @@
   ../REVIEW-AND-CONCEPT-v2.md.
 -->
 
-# abilithic-defensive-competition (DHC)
+# BlueForge (DHC)
 ### Defensive Hardening Competition Platform — Technical Design Document (FINAL)
 
-> **Repo / codename:** `abilithic-defensive-competition` · **Brand:** **abilithic DHC**
+> **Repo / codename:** `BlueForge` · **Brand:** **BlueForge**
 > **Tagline:** *Defend. Harden. Compete.*
 > **Status dokumen:** Final konsep (v1.0) — menjadi **acuan utama** implementasi & dokumentasi open source.
 > **Cakupan:** produk, arsitektur, keamanan, kontrak teknis, operasi, kualitas, tata kelola, roadmap.
@@ -67,7 +67,7 @@
 
 ## 2. Ringkasan Eksekutif & Kelayakan
 
-**abilithic DHC** adalah platform lomba keamanan siber **defensif (system hardening)**. Peserta menjalankan VM Ubuntu yang sengaja dibuat rentan, lalu **memperbaiki celah keamanan** dalam batas waktu. Setiap perbaikan benar otomatis menambah skor, dan skor seluruh peserta tampil **realtime** di papan skor.
+**BlueForge** adalah platform lomba keamanan siber **defensif (system hardening)**. Peserta menjalankan VM Ubuntu yang sengaja dibuat rentan, lalu **memperbaiki celah keamanan** dalam batas waktu. Setiap perbaikan benar otomatis menambah skor, dan skor seluruh peserta tampil **realtime** di papan skor.
 
 **Kelayakan: SANGAT MUNGKIN & terbukti.** Modelnya identik dengan **CyberPatriot** (kompetisi hardening pelajar terbesar di AS, belasan tahun berjalan): VM di komputer peserta + agen scoring lokal + leaderboard realtime di web. Seluruh sistem dapat berjalan **100% gratis** memakai **Vercel + Supabase**, dengan agen **Python (MVP) → Go (produksi)**.
 
@@ -104,9 +104,9 @@
 ```
 ┌──────────────────────── KOMPUTER PESERTA ────────────────────────┐
 │ VMware / VirtualBox                                               │
-│ ┌──────────── VM Ubuntu (abilithic-image) ──────────────────────┐│
+│ ┌──────────── VM Ubuntu (blueforge-image) ──────────────────────┐│
 │ │ • OS sengaja rentan (canonical dirty state, terdokumentasi)   ││
-│ │ • abilithic-agent (systemd, autostart)                        ││
+│ │ • blueforge-agent (systemd, autostart)                        ││
 │ │    - Registrasi peserta                                       ││
 │ │    - Snapshot evidence: registration → start → stop           ││
 │ │    - Loop: poll state → run checks → scoring → kirim          ││
@@ -174,7 +174,7 @@ Tingkat adalah **preset** (baris `difficulties`) yang mengatur 4 hal dari data, 
 ## 7. Komponen 1 — VM Image (`image/`)
 
 - Ubuntu LTS (mis. 22.04) dalam **canonical dirty state**: celah terkontrol & terdokumentasi (acuan keadilan).
-- `abilithic-agent` sebagai **systemd service** (autostart).
+- `blueforge-agent` sebagai **systemd service** (autostart).
 - **answer-key terenkripsi** (§12) — peserta tak bisa baca jawaban dari dalam VM.
 - Mini web agen `http://localhost:8080`.
 - **Versi image** (CalVer, mis. `2026.1`) + `canonical_baseline_hash` per tingkat.
@@ -531,7 +531,7 @@ Hanya **server** yang mengubah state; agen & UI membacanya. `ends_at` dihitung s
 ```mermaid
 flowchart LR
   P[Participant] --> VM[VM Ubuntu]
-  VM --> A[abilithic-agent]
+  VM --> A[blueforge-agent]
   A -- HTTPS+HMAC --> API[/v1 API/]
   API --> DB[(Postgres)]
   DB --> RT[Supabase Realtime]
@@ -771,7 +771,7 @@ Tiap kenaikan versi lewat **titik ekstensi** (§27) — inti tetap stabil. Mulai
 ## 30. Struktur Repo GitHub (Monorepo)
 
 ```
-abilithic-defensive-competition/
+BlueForge/
 ├── README.md                  # ringkasan + Visi/Misi + link TDD ini
 ├── LICENSE  CONTRIBUTING.md  CODE_OF_CONDUCT.md  SECURITY.md  CHANGELOG.md
 ├── docs/
@@ -785,13 +785,13 @@ abilithic-defensive-competition/
 ├── web/                       # Next.js (Vercel)
 │   ├── app/ (peserta + admin + evidence-viewer)
 │   └── lib/supabase.ts
-├── agent/                     # abilithic-agent
+├── agent/                     # blueforge-agent
 │   ├── agent.py | /go
 │   ├── engine/                # loop, state machine, scoring (pure fn), signing
 │   ├── checks/<code>/manifest.yaml + check.*   # plugin-style (§15)
 │   ├── snapshot/              # baseline & evidence
 │   ├── local-ui/              # localhost:8080
-│   └── systemd/abilithic-agent.service
+│   └── systemd/blueforge-agent.service
 ├── image/
 │   ├── build/                 # provisioning celah (canonical)
 │   ├── canonical/             # baseline + hash (per tingkat)
@@ -1086,4 +1086,4 @@ Seperti saran review: **berhenti menambah dokumen, mulai coding.** Urutan build 
 
 Tiap langkah diuji terhadap **Acceptance Criteria (§40)** sebelum lanjut. Fondasi sudah stabil (§27) — penambahan Windows/Docker/Cloud nanti tak perlu merombak inti.
 
-*— Selesai. abilithic DHC · Defend. Harden. Compete. · Dokumen fondasi v0.1; status implementasi terkini ada di README.md dan REVIEW-AND-CONCEPT-v2.md.*
+*— Selesai. BlueForge · Defend. Harden. Compete. · Dokumen fondasi v0.1; status implementasi terkini ada di README.md dan REVIEW-AND-CONCEPT-v2.md.*

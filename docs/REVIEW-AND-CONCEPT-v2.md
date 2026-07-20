@@ -1,4 +1,4 @@
-# Review & Concept v2 — abilithic DHC
+# Review & Concept v2 — BlueForge
 
 Review menyeluruh (hulu ke hilir) atas kondisi platform per 2026-07-06, akar
 masalah bug "poin/timestamp tidak update otomatis", dan konsep v0.3 untuk
@@ -12,7 +12,7 @@ bolong, dan apa langkah berikutnya".
 CI, unit test scoring, baseline/evidence anti pre-fix, store-and-forward,
 HMAC signing. Ini BUKAN proyek amatir. Masalah yang ditemukan lebih ke soal
 robustness (jam VM), auto-refresh yang belum menyeluruh, dan presentasi
-(README/branding) yang belum sejajar dengan abilithic-recon & abilithic-scan.
+(README/branding) yang belum sejajar dengan Fathom & Flare.
 Bagian di bawah ini rinci per lapisan.
 
 ---
@@ -27,12 +27,12 @@ Bagian di bawah ini rinci per lapisan.
 | 4 | Tidak ada rate limiting di `/api/v1/admin/login` | Rentan brute-force password admin | Belum — direkomendasikan v0.3 (§4.4) |
 | 5 | Tidak ada NTP/time-sync di provisioning VM | Jam VM hasil clone tetap bisa ngaco di lapisan OS (mitigasi aplikasi sudah ada di #1, ini lapisan pertahanan kedua) | Direkomendasikan v0.3 (§4.5) |
 | 6 | UI leaderboard/admin/kiosk sudah modern (dark glassmorphism) tapi minim micro-interaction, skeleton loading, dan indikator "live" | Terasa statis walau datanya sebenarnya sudah live-poll | **Dipoles** (§3) |
-| 7 | README & presentasi GitHub tidak sejajar dengan abilithic-recon/abilithic-scan (tanpa badge, logo, screenshot, footer branding) | Kesan proyek kurang matang dibanding proyek Abilithic lain | **Disamakan** (§5) |
-| 8 | Tidak bilingual (ID/EN) seperti abilithic-recon & abilithic-scan | Audiens internasional tak terlayani | Direkomendasikan v0.3 (§4.6) |
+| 7 | README & presentasi GitHub tidak sejajar dengan Fathom/Flare (tanpa badge, logo, screenshot, footer branding) | Kesan proyek kurang matang dibanding proyek Abilithic lain | **Disamakan** (§5) |
+| 8 | Tidak bilingual (ID/EN) seperti Fathom & Flare | Audiens internasional tak terlayani | Direkomendasikan v0.3 (§4.6) |
 | 9 | Tidak ada export hasil lomba (CSV/PDF) dari admin console | Panitia harus query manual ke Supabase utk laporan akhir | Direkomendasikan v0.3 (§4.3) |
 | 10 | `computed_at_ms` & `taken_at_server_ms` sebelumnya memakai jam lokal VM (bukan cuma header signing) | Ranking tie-break & bukti forensik ikut salah bila jam VM ngaco | **Diperbaiki** (§2.1) |
 | 11 | Port lokal kiosk/agent default `8080` bentrok dengan proxy Burp Suite/OWASP ZAP di mesin tester | Tak bisa jalankan agent & Burp bersamaan di komputer yang sama | **Diperbaiki** (§6) |
-| 12 | File TDD asli (`KONSEP-abilithic-defensive-competition.md`) hidup di luar repo git, tak pernah ter-upload ke GitHub, dan README lama linknya patah (`../...`) | Dokumen desain utama tidak terlihat/hilang di GitHub | **Diperbaiki** (§6) |
+| 12 | File TDD asli (`KONSEP-BlueForge.md`) hidup di luar repo git, tak pernah ter-upload ke GitHub, dan README lama linknya patah (`../...`) | Dokumen desain utama tidak terlihat/hilang di GitHub | **Diperbaiki** (§6) |
 
 ---
 
@@ -201,7 +201,7 @@ dengan effort kecil, dampak besar.
   "Catat image_version & hitung baseline hash sebelum export OVA").
 
 ### 4.6 Bilingual (ID/EN)
-abilithic-recon & abilithic-scan menonjolkan UI bilingual Indonesia/Inggris
+Fathom & Flare menonjolkan UI bilingual Indonesia/Inggris
 sebagai fitur. DHC saat ini Indonesia-only di seluruh permukaan (web, kiosk,
 docs peserta). Untuk kompetisi internasional atau kontributor open-source
 non-Indonesia, menambahkan toggle bahasa (mis. `next-intl` di web, dict
@@ -224,7 +224,7 @@ sebagai langkah pertama — UI aplikasi itu sendiri belum.
 
 ## 5. Penyelarasan Presentasi GitHub
 
-Dibandingkan dengan README `abilithic-recon` & `abilithic-scan` (dicek
+Dibandingkan dengan README `Fathom` & `Flare` (dicek
 langsung dari GitHub org `abilithic`), README lama proyek ini punya struktur
 konten yang baik tapi kurang dipoles presentasinya: tanpa badge, tanpa
 logo/banner, tanpa screenshot, tanpa footer atribusi "Developed by Abil
@@ -276,7 +276,7 @@ bersih sejak awal, tidak ada yang perlu dihapus dari sisi git. Yang benar-benar
 "tidak penting"/tidak profesional ternyata bukan file sampah, melainkan
 **penamaan & lokasi dokumen**:
 
-- `KONSEP-abilithic-defensive-competition.md` (TDD asli, 1000+ baris) hidup
+- `KONSEP-BlueForge.md` (TDD asli, 1000+ baris) hidup
   **di luar repo git** (satu folder di atas), sehingga **tidak pernah
   ter-upload ke GitHub** — dan README lama/baru sempat mereferensikannya
   dengan link yang salah. **Dipindahkan** (disalin, isi tidak diubah) ke
@@ -314,7 +314,7 @@ panjang ada di `docs/`.
 | `web/app/globals.css` | `.live-dot`/`.live-tag`, skeleton shimmer, micro-interaction hover/transisi, highlight baris juara #1 |
 | `agent/ui/templates/index.html` | Fade-in kartu, transisi dot koneksi, tooltip tombol sinkron diperjelas |
 | `agent/config.example.yaml`, `agent/kiosk.py`, `agent/ui/server.py`, `agent/run-agent.sh` | Port default 8080 → 9090 |
-| `README.md` | Ditulis ulang mengikuti pola abilithic-recon/abilithic-scan; link ke `docs/` diperbarui |
+| `README.md` | Ditulis ulang mengikuti pola Fathom/Flare; link ke `docs/` diperbarui |
 | `DISCLAIMER.md`, `assets/README.md` | **Baru** |
 | `docs/TECHNICAL-DESIGN.md` | **Baru** — TDD asli dipindahkan ke dalam repo |
 | `docs/REVIEW-AND-CONCEPT-v2.md` | **Baru** — dokumen ini, dipindah dari root |

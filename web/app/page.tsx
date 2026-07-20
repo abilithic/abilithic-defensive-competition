@@ -83,8 +83,8 @@ export default function Leaderboard() {
     <div className="wrap">
       <div className="topbar">
         <div className="brand">
-          <div className="logo"><img src="/abilithic-icon-256.png" alt="abilithic" /></div>
-          <div><h1>abilithic DHC</h1><div className="sub">Defend · Harden · Compete</div></div>
+          <div className="logo"><img src="/blueforge-icon-256.png" alt="BlueForge" /></div>
+          <div><h1>BlueForge</h1><div className="sub">Defend · Harden · Compete</div></div>
         </div>
         <a href="/admin" className="badge">Panitia</a>
       </div>
@@ -172,7 +172,7 @@ export default function Leaderboard() {
 
       <div className="small muted" style={{ textAlign: "center", display: "flex", justifyContent: "center", gap: 8, alignItems: "center" }}>
         <span className="live-tag"><span className="live-dot" /> Live</span>
-        <span>· Papan skor memperbarui otomatis · abilithic DHC</span>
+        <span>· Papan skor memperbarui otomatis · BlueForge</span>
       </div>
     </div>
   );

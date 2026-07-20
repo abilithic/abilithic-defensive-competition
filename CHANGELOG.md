@@ -4,10 +4,18 @@ Semua perubahan penting dicatat di sini. Format: [Keep a Changelog](https://keep
 versi mengikuti [SemVer](https://semver.org) (TDD §24).
 
 ## [Unreleased]
+### Changed
+- **Rebrand: abilithic DHC → BlueForge**, part of the NoxNull toolkit
+  (studio: [n0xnull](https://github.com/n0xnull)). New electric-blue /
+  forged-steel visual identity (anvil + spark icon) — distinct from the
+  rest of the toolkit. Renamed `abilithic-agent` service → `blueforge-agent`,
+  `/opt/abilithic-agent` → `/opt/blueforge-agent`, kiosk desktop entries,
+  and all branding strings across web, agent, and docs.
+
 ### Fixed
 - **`kiosk.py` menjalankan `main.py` duplikat, rebutan port 9090 dengan
-  `abilithic-agent.service` (systemd)**: ditemukan lewat log
-  `/tmp/abilithic-kiosk.log` yang menunjukkan "Address already in use"
+  `blueforge-agent.service` (systemd)**: ditemukan lewat log
+  `/tmp/blueforge-kiosk.log` yang menunjukkan "Address already in use"
   setiap kali kiosk (re)start. Karena systemd sudah menjalankan `main.py`
   terus-menerus di instalasi kiosk normal, `kiosk.py` yang IKUT menjalankan
   salinan `main.py` sendiri (`start_agent()`) menyebabkan proses kedua ini
@@ -25,17 +33,17 @@ versi mengikuti [SemVer](https://semver.org) (TDD §24).
   ulang manual. Sekarang `main()` (`agent/kiosk.py`) loop selamanya dan
   membuka lagi window otomatis dalam ~2 detik. Sebagai fallback kalau proses
   kiosk-nya sendiri ikut mati, ditambahkan shortcut Desktop **"Restart
-  abilithic DHC"** (`agent/kiosk/restart-kiosk.desktop` +
+  BlueForge"** (`agent/kiosk/restart-kiosk.desktop` +
   `restart-kiosk.sh`) yang tinggal di-double-click tanpa buka terminal.
 - **Icon abilithic dipakai konsisten di kiosk**: logo placeholder (`◈`) di
   UI kiosk lokal (`agent/ui/templates/index.html`) diganti gambar asli
   (disajikan lewat route static Flask baru, `agent/ui/static/`), dan ikon
-  window/taskbar kiosk (`agent/kiosk/abilithic-dhc.desktop`, shortcut
+  window/taskbar kiosk (`agent/kiosk/blueforge.desktop`, shortcut
   restart) diarahkan ke ikon yang sama alih-alih ikon generik
   `utilities-terminal`.
 - **Panduan troubleshooting VM** ditambahkan di README (ringkas, EN) dan
   `docs/DEPLOYMENT-GUIDE.md` (lengkap, ID): alur run awal, cara update kode
-  di VM yang benar (termasuk resync wajib ke `/opt/abilithic-agent/` yang
+  di VM yang benar (termasuk resync wajib ke `/opt/blueforge-agent/` yang
   sebelumnya sering terlewat), penanganan window kiosk tertutup, dan
   kumpulan command diagnostik umum.
 - **Transparansi skor di leaderboard publik**: baris/skor peserta kini bisa
@@ -97,8 +105,8 @@ versi mengikuti [SemVer](https://semver.org) (TDD §24).
 
 ### Changed
 - **Branding di web portal**: logo placeholder (`◈`) di leaderboard & admin
-  console diganti dengan logo abilithic sungguhan (`web/public/abilithic-icon-256.png`,
-  disalin dari `assets/abilithic-icon-256.png`), juga dipakai sebagai favicon
+  console diganti dengan logo abilithic sungguhan (`web/public/blueforge-icon-256.png`,
+  disalin dari `assets/blueforge-icon-256.png`), juga dipakai sebagai favicon
   (`web/app/layout.tsx`). Nama sesi default saat buat lomba baru diubah dari
   "Lomba DHC #1" menjadi "Defense Hardening Competition #1"
   (`web/app/admin/page.tsx`).
@@ -162,7 +170,7 @@ versi mengikuti [SemVer](https://semver.org) (TDD §24).
 - UI leaderboard/admin/kiosk dipoles: indikator "Live", skeleton loading,
   micro-interaction hover/transisi, highlight juara #1 (`web/app/globals.css`,
   `web/app/page.tsx`, `web/app/admin/page.tsx`, `agent/ui/templates/index.html`).
-- README ditulis ulang mengikuti pola abilithic-recon & abilithic-scan
+- README ditulis ulang mengikuti pola Fathom & Flare
   (badge, hero, screenshots, footer branding); tambah `DISCLAIMER.md` dan
   `assets/README.md`.
 - **Port lokal kiosk/agent: `8080` → `9090`** (`agent/config.example.yaml`,
@@ -172,7 +180,7 @@ versi mengikuti [SemVer](https://semver.org) (TDD §24).
   agent bisa jalan berdampingan dengan alat itu di komputer yang sama. Entri
   changelog historis di atas (v0.1/v0.2) sengaja tidak diubah.
 - **Reorganisasi dokumen untuk presentasi GitHub yang lebih profesional**:
-  - `KONSEP-abilithic-defensive-competition.md` (TDD asli, sebelumnya hidup di
+  - `KONSEP-BlueForge.md` (TDD asli, sebelumnya hidup di
     luar repo git dan tak pernah ter-upload) dipindahkan ke dalam repo sebagai
     `docs/TECHNICAL-DESIGN.md`.
   - `REVIEW-DAN-KONSEP-v2.md` (root, nama campur bahasa) → `docs/REVIEW-AND-CONCEPT-v2.md`.
@@ -197,5 +205,5 @@ versi mengikuti [SemVer](https://semver.org) (TDD §24).
 - **Governance**: README, LICENSE (MIT), CONTRIBUTING, SECURITY, CODE_OF_CONDUCT, ADR-001..006.
 - **CI**: GitHub Actions (lint + unit test scoring).
 
-[Unreleased]: https://github.com/abilithic/abilithic-defensive-competition/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/abilithic/abilithic-defensive-competition/releases/tag/v0.1.0
+[Unreleased]: https://github.com/n0xnull/BlueForge/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/n0xnull/BlueForge/releases/tag/v0.1.0

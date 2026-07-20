@@ -1,4 +1,4 @@
-# Contributing to abilithic DHC
+# Contributing to BlueForge
 
 Terima kasih sudah tertarik berkontribusi! 🎉
 

@@ -1,5 +1,5 @@
 -- =====================================================================
--- abilithic DHC — Database Schema (v0.1)
+-- BlueForge — Database Schema (v0.1)
 -- Postgres / Supabase. Lihat TDD §20 & §33 (ERD).
 -- Aturan: perubahan ke depan via db/migrations/ (additive-only).
 -- =====================================================================

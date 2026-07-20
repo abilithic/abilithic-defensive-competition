@@ -1,4 +1,4 @@
-# 🚀 Panduan Deployment abilithic DHC — Dari Nol Sampai Jalan
+# 🚀 Panduan Deployment BlueForge — Dari Nol Sampai Jalan
 
 > Panduan lengkap untuk pemula. Ikuti **berurutan**. Estimasi total: **1,5–3 jam**
 > (sebagian besar menunggu instalasi Ubuntu). Centang tiap langkah yang selesai. ✅
@@ -24,7 +24,7 @@
 ## ✅ Yang perlu disiapkan
 
 - File `ubuntu-26.04-desktop-amd64.iso` (sudah kamu punya).
-- Folder repo `abilithic-defensive-competition` (sudah dibuat).
+- Folder repo `BlueForge` (sudah dibuat).
 - Koneksi internet.
 - Akun email untuk daftar: **GitHub**, **Supabase**, **Vercel**, **Broadcom** (untuk VMware).
 
@@ -41,19 +41,19 @@ Kita butuh repo online supaya (a) bisa di-deploy Vercel, dan (b) mudah di-clone 
 
 ### 1.2 Buat repo kosong di GitHub
 1. Login ke **https://github.com** → klik **+** (kanan atas) → **New repository**.
-2. Repository name: **`abilithic-defensive-competition`**.
+2. Repository name: **`BlueForge`**.
 3. Pilih **Private** (atau Public jika ingin open source). **Jangan** centang "Add README".
 4. Klik **Create repository**. Biarkan halaman ini terbuka (ada perintah git-nya).
 
 ### 1.3 Push dari komputer kamu
 Buka **PowerShell**, jalankan (ganti `<username>` dengan username GitHub kamu):
 ```powershell
-cd "D:\Lab Kantor 2025\Github-Me\abilithic-defensive-competition"
+cd "D:\Lab Kantor 2025\Github-Me\BlueForge"
 git init
 git add -A
-git commit -m "feat: abilithic DHC v0.1"
+git commit -m "feat: BlueForge v0.1"
 git branch -M main
-git remote add origin https://github.com/<username>/abilithic-defensive-competition.git
+git remote add origin https://github.com/<username>/BlueForge.git
 git push -u origin main
 ```
 - Jika diminta login, ikuti proses autentikasi GitHub (browser/token).
@@ -71,7 +71,7 @@ git push -u origin main
 1. Buka **https://supabase.com** → **Start your project** → daftar (paling cepat: **Continue with GitHub**).
 2. Klik **New project**.
 3. Isi:
-   - **Name:** `abilithic-dhc`
+   - **Name:** `blueforge`
    - **Database Password:** buat password kuat → **SIMPAN** (dicatat di tempat aman).
    - **Region:** pilih **Southeast Asia (Singapore)** (terdekat dari Indonesia).
 4. Klik **Create new project**. Tunggu ±2 menit sampai project siap.
@@ -116,7 +116,7 @@ Jalankan **dua kali**, simpan hasilnya:
 
 ### 3.2 Import repo ke Vercel
 1. Buka **https://vercel.com** → daftar/login (pilih **Continue with GitHub**).
-2. **Add New… → Project** → pilih repo **abilithic-defensive-competition** → **Import**.
+2. **Add New… → Project** → pilih repo **BlueForge** → **Import**.
 
 ### 3.3 Atur Root Directory
 - Di halaman konfigurasi, cari **Root Directory** → klik **Edit** → pilih folder **`web`**.
@@ -137,7 +137,7 @@ Masih di halaman yang sama, buka **Environment Variables**, tambahkan 5 baris be
 Lalu klik **Deploy**. Tunggu ±1–2 menit sampai muncul **"Congratulations"**. ✅
 
 ### 3.5 Dapatkan URL & tes
-- Vercel memberi URL seperti **`https://abilithic-defensive-competition.vercel.app`**.
+- Vercel memberi URL seperti **`https://blueforge.vercel.app`**.
   **Catat URL ini** — nanti dimasukkan ke config agent.
 - Buka URL tersebut → muncul halaman **leaderboard** ("Belum ada sesi aktif"). ✅
 - Buka **`URL/admin`** → masukkan **ADMIN_PASSWORD** → berhasil masuk = web & database tersambung. 🎉
@@ -165,7 +165,7 @@ VMware Workstation Pro kini **gratis untuk penggunaan pribadi**, tapi unduhnya l
 1. Buka VMware → **Create a New Virtual Machine**.
 2. Pilih **Installer disc image file (iso)** → **Browse** → pilih `ubuntu-26.04-desktop-amd64.iso`.
    - Jika VMware menawarkan **Easy Install**, isi nama, username, dan password → ini akan meng-install Ubuntu otomatis. (Boleh dipakai; kalau tidak muncul, lanjut manual.)
-3. **Nama VM:** `abilithic-dhc-ubuntu` → pilih lokasi penyimpanan.
+3. **Nama VM:** `blueforge-ubuntu` → pilih lokasi penyimpanan.
 4. **Disk size:** **35 GB** (Desktop butuh ruang) → "Store as a single file".
 5. **Customize Hardware:**
    - **Memory:** **4096 MB** (4 GB) minimal — Desktop 26.04 cukup berat.
@@ -211,8 +211,8 @@ sudo apt install -y git python3-pip openssh-server
 Clone repo kamu (ganti `<username>`; jika repo Private, masukkan token saat diminta):
 ```bash
 cd ~
-git clone https://github.com/abilithic/abilithic-defensive-competition.git
-cd abilithic-defensive-competition/agent
+git clone https://github.com/n0xnull/BlueForge.git
+cd BlueForge/agent
 ```
 > Repo Private & susah login? Alternatif: di web GitHub, **Code → Download ZIP**, lalu
 > pindahkan ke VM lewat drag-drop (butuh VMware Tools) atau shared folder, dan extract.
@@ -230,7 +230,7 @@ nano config.yaml
 ```
 Ubah baris `portal_url` menjadi URL Vercel kamu (Langkah 3.5), contoh:
 ```yaml
-portal_url: "https://abilithic-defensive-competition.vercel.app"
+portal_url: "https://blueforge.vercel.app"
 image_version: "2026.04"
 ```
 Simpan di nano: **Ctrl+O → Enter → Ctrl+X**.
@@ -238,7 +238,7 @@ Simpan di nano: **Ctrl+O → Enter → Ctrl+X**.
 ### 5.5 Tanam celah keamanan (canonical dirty state)
 Agar ada yang bisa di-hardening, jalankan skrip penanam celah:
 ```bash
-cd ~/abilithic-defensive-competition
+cd ~/BlueForge
 sudo bash image/build/provision.sh
 ```
 Ini akan (sengaja) menanam **15 celah keamanan** (root login SSH aktif, UFW mati,
@@ -248,7 +248,7 @@ telnet terpasang, user rogue, permission longgar, backdoor SUID, dst. — lihat
 
 ### 5.6 Jalankan agent
 ```bash
-cd ~/abilithic-defensive-competition/agent
+cd ~/BlueForge/agent
 sudo python3 main.py
 ```
 - Biarkan terminal ini terbuka (agent berjalan di sini).
@@ -256,10 +256,10 @@ sudo python3 main.py
 
 > 🛠️ **(Opsional) Jadikan service otomatis** (agar jalan saat boot):
 > ```bash
-> sudo mkdir -p /opt/abilithic-agent
-> sudo cp -r ~/abilithic-defensive-competition/agent/* /opt/abilithic-agent/
-> sudo cp /opt/abilithic-agent/systemd/abilithic-agent.service /etc/systemd/system/
-> sudo systemctl daemon-reload && sudo systemctl enable --now abilithic-agent
+> sudo mkdir -p /opt/blueforge-agent
+> sudo cp -r ~/BlueForge/agent/* /opt/blueforge-agent/
+> sudo cp /opt/blueforge-agent/systemd/blueforge-agent.service /etc/systemd/system/
+> sudo systemctl daemon-reload && sudo systemctl enable --now blueforge-agent
 > ```
 
 ---
@@ -311,30 +311,30 @@ Kalau semua ini berhasil, **v0.1 kamu resmi jalan end-to-end.** 🚀
 cat /dev/null > ~/.bash_history && history -c && history -w
 
 # Build soal (tanam 15 celah keamanan) di VM
-cd ~/abilithic-defensive-competition
+cd ~/BlueForge
 git pull
 sudo bash image/build/provision.sh
 ```
 
 ### Update kode GitHub di VM yang SUDAH terpasang kiosk-nya
 Ini bagian yang paling sering kelewat: kiosk/agent yang benar-benar jalan
-saat boot itu **salinan terpisah** di `/opt/abilithic-agent/` (disalin oleh
+saat boot itu **salinan terpisah** di `/opt/blueforge-agent/` (disalin oleh
 `install-kiosk.sh` sekali saat instalasi awal) — **bukan** langsung dari
 folder git ini. `git pull` saja **tidak cukup**, harus disusul resync ke `/opt`:
 ```bash
-cd ~/abilithic-defensive-competition
+cd ~/BlueForge
 git pull
 sudo bash agent/kiosk/install-kiosk.sh    # resync kode ke /opt + pasang ulang shortcut/icon
-sudo systemctl restart abilithic-agent    # restart service agent (systemd)
+sudo systemctl restart blueforge-agent    # restart service agent (systemd)
 
 # uji tanpa reboot dulu:
 sudo pkill -f kiosk.py 2>/dev/null
-python3 /opt/abilithic-agent/kiosk.py     # Ctrl+C untuk berhenti setelah yakin OK
+python3 /opt/blueforge-agent/kiosk.py     # Ctrl+C untuk berhenti setelah yakin OK
 
 # baru reboot VM untuk pastikan autostart-nya juga ambil kode baru
 ```
 > Verifikasi cepat apakah `/opt` sudah sinkron dengan repo:
-> `diff ~/abilithic-defensive-competition/agent/kiosk.py /opt/abilithic-agent/kiosk.py`
+> `diff ~/BlueForge/agent/kiosk.py /opt/blueforge-agent/kiosk.py`
 > — kosong/tidak ada output berarti sudah sama persis.
 
 ### Kalau window kiosk tidak sengaja tertutup peserta
@@ -343,18 +343,18 @@ Sejak v0.3, `kiosk.py` **otomatis membuka lagi jendelanya sendiri** dalam
 panitia **tidak perlu melakukan apa pun**. Kalau suatu saat window tetap
 tidak muncul lagi (kasus langka: proses kiosk.py ikut mati, bukan cuma
 window-nya), ada dua fallback:
-- **Peserta:** double-click shortcut **"Restart abilithic DHC"** di Desktop —
+- **Peserta:** double-click shortcut **"Restart BlueForge"** di Desktop —
   tidak perlu buka terminal.
 - **Panitia (lewat terminal/SSH):**
   ```bash
-  bash /opt/abilithic-agent/kiosk/restart-kiosk.sh
+  bash /opt/blueforge-agent/kiosk/restart-kiosk.sh
   ```
 
 ## Command Troubleshooting Umum
 
 ```bash
 # Status service inti (agent & telnet listener simulasi)
-systemctl status abilithic-agent dhc-telnetd
+systemctl status blueforge-agent dhc-telnetd
 
 # Apakah kiosk.py & main.py benar-benar jalan?
 ps aux | grep -E "kiosk.py|main.py" | grep -v grep
@@ -363,30 +363,30 @@ ps aux | grep -E "kiosk.py|main.py" | grep -v grep
 journalctl --user -b | grep -i -E "kiosk|webview|gtk"
 
 # Log service agent (systemd, root)
-sudo journalctl -u abilithic-agent -n 100 --no-pager
+sudo journalctl -u blueforge-agent -n 100 --no-pager
 
 # Cek /opt sudah sinkron dengan repo git (kosong = sudah sama)
-diff ~/abilithic-defensive-competition/agent/kiosk.py /opt/abilithic-agent/kiosk.py
+diff ~/BlueForge/agent/kiosk.py /opt/blueforge-agent/kiosk.py
 
 # Restart paksa semuanya dari nol (kiosk + agent service)
-sudo systemctl restart abilithic-agent
+sudo systemctl restart blueforge-agent
 sudo pkill -f kiosk.py 2>/dev/null
-python3 /opt/abilithic-agent/kiosk.py &
+python3 /opt/blueforge-agent/kiosk.py &
 
 # Cek koneksi ke web portal (Vercel) dari dalam VM
-curl -sS -o /dev/null -w "%{http_code}\n" "$(grep portal_url /opt/abilithic-agent/config.yaml | awk '{print $2}' | tr -d '\"')"
+curl -sS -o /dev/null -w "%{http_code}\n" "$(grep portal_url /opt/blueforge-agent/config.yaml | awk '{print $2}' | tr -d '\"')"
 ```
 
 ## Tabel Gejala → Solusi
 
 | Gejala | Solusi |
 |---|---|
-| `localhost:9090` tak terbuka di VM | Pastikan `abilithic-agent.service` jalan (`systemctl status abilithic-agent`) atau terminal `sudo python3 main.py` masih jalan tanpa error. |
-| Sudah `git pull` tapi perilaku VM tidak berubah | **Penyebab paling umum**: lupa resync ke `/opt/abilithic-agent/`. Jalankan `sudo bash agent/kiosk/install-kiosk.sh` lalu `sudo systemctl restart abilithic-agent`. |
-| Kiosk blank/hitam setelah restart VM | Cek `ps aux \| grep kiosk.py` — kalau prosesnya tidak ada sama sekali, autostart gagal ke-trigger (cek `~/.config/autostart/abilithic-dhc.desktop` & `journalctl --user -b`). Kalau proses ADA tapi window tetap blank, coba paksa X11: edit `abilithic-dhc.desktop`, tambahkan `Environment=GDK_BACKEND=x11` sebelum `Exec=`. |
-| Window kiosk ke-close peserta | Otomatis terbuka lagi ~2 detik. Kalau tidak, double-click shortcut **"Restart abilithic DHC"** di Desktop. |
+| `localhost:9090` tak terbuka di VM | Pastikan `blueforge-agent.service` jalan (`systemctl status blueforge-agent`) atau terminal `sudo python3 main.py` masih jalan tanpa error. |
+| Sudah `git pull` tapi perilaku VM tidak berubah | **Penyebab paling umum**: lupa resync ke `/opt/blueforge-agent/`. Jalankan `sudo bash agent/kiosk/install-kiosk.sh` lalu `sudo systemctl restart blueforge-agent`. |
+| Kiosk blank/hitam setelah restart VM | Cek `ps aux \| grep kiosk.py` — kalau prosesnya tidak ada sama sekali, autostart gagal ke-trigger (cek `~/.config/autostart/blueforge.desktop` & `journalctl --user -b`). Kalau proses ADA tapi window tetap blank, coba paksa X11: edit `blueforge.desktop`, tambahkan `Environment=GDK_BACKEND=x11` sebelum `Exec=`. |
+| Window kiosk ke-close peserta | Otomatis terbuka lagi ~2 detik. Kalau tidak, double-click shortcut **"Restart BlueForge"** di Desktop. |
 | Registrasi: "kode sesi tidak ditemukan" | Pastikan sesi sudah dibuat di /admin & kode diketik benar (huruf besar). |
-| Registrasi gagal / timeout | Cek `portal_url` di `config.yaml` (dan di `/opt/abilithic-agent/config.yaml`!) = URL Vercel yang benar (pakai `https://`). Cek VM ada internet (`ping google.com`). |
+| Registrasi gagal / timeout | Cek `portal_url` di `config.yaml` (dan di `/opt/blueforge-agent/config.yaml`!) = URL Vercel yang benar (pakai `https://`). Cek VM ada internet (`ping google.com`). |
 | Skor tidak naik | Perbaikan mungkin belum sesuai — lihat hint di `localhost:9090` (klik baris soal). Pastikan status **RUNNING**. |
 | Leaderboard tak update | Tunggu ~4 detik (mode polling) atau aktifkan Realtime (2.4). Refresh halaman. |
 | Admin "Password salah" | `ADMIN_PASSWORD` di Vercel ≠ yang kamu ketik. Cek Environment Variables di Vercel → Redeploy bila baru diubah. |
@@ -404,7 +404,7 @@ Untuk lomba nyata, kamu bekukan VM ini menjadi 1 image yang dibagikan ke semua p
 2. Matikan VM. Di VMware: **File → Export to OVF/OVA**.
 3. Hitung checksum untuk verifikasi peserta:
    ```powershell
-   certutil -hashfile abilithic-dhc-2026.04.ova SHA256
+   certutil -hashfile blueforge-2026.04.ova SHA256
    ```
 4. Unggah OVA + checksum ke **GitHub Releases** atau Google Drive → bagikan link.
    (Lihat `image/README.md`.)

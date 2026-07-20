@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =====================================================================
-# abilithic DHC — Pasang mode KIOSK di VM peserta.
+# BlueForge — Pasang mode KIOSK di VM peserta.
 # Setelah ini: VM boot -> aplikasi DHC muncul fullscreen otomatis.
 # Jalankan dari folder repo:  sudo bash agent/kiosk/install-kiosk.sh
 # =====================================================================
@@ -23,22 +23,22 @@ echo "[2/6] (opsional) Coba pasang pywebview untuk jendela native..."
 apt-get install -y python3-gi gir1.2-webkit2-4.1 >/dev/null 2>&1 || true
 pip3 install pywebview --break-system-packages >/dev/null 2>&1 || true
 
-echo "[3/6] Salin agent ke /opt/abilithic-agent..."
-mkdir -p /opt/abilithic-agent
-cp -r "$REPO_DIR/agent/." /opt/abilithic-agent/
+echo "[3/6] Salin agent ke /opt/blueforge-agent..."
+mkdir -p /opt/blueforge-agent
+cp -r "$REPO_DIR/agent/." /opt/blueforge-agent/
 # pastikan ada config.yaml (kalau belum, dari contoh — INGAT set portal_url!)
-if [[ ! -f /opt/abilithic-agent/config.yaml ]]; then
-  cp /opt/abilithic-agent/config.example.yaml /opt/abilithic-agent/config.yaml
+if [[ ! -f /opt/blueforge-agent/config.yaml ]]; then
+  cp /opt/blueforge-agent/config.example.yaml /opt/blueforge-agent/config.yaml
   echo "    !! Belum ada config.yaml -> dibuat dari contoh. EDIT portal_url:"
-  echo "       sudo nano /opt/abilithic-agent/config.yaml"
+  echo "       sudo nano /opt/blueforge-agent/config.yaml"
 fi
-chmod +x /opt/abilithic-agent/kiosk.py /opt/abilithic-agent/main.py 2>/dev/null || true
-chmod +x /opt/abilithic-agent/kiosk/restart-kiosk.sh 2>/dev/null || true
+chmod +x /opt/blueforge-agent/kiosk.py /opt/blueforge-agent/main.py 2>/dev/null || true
+chmod +x /opt/blueforge-agent/kiosk/restart-kiosk.sh 2>/dev/null || true
 
 echo "[4/6] Pasang autostart untuk user $TARGET_USER..."
 install -d -o "$TARGET_USER" -g "$TARGET_USER" "$USER_HOME/.config/autostart"
-cp "$REPO_DIR/agent/kiosk/abilithic-dhc.desktop" "$USER_HOME/.config/autostart/"
-chown "$TARGET_USER:$TARGET_USER" "$USER_HOME/.config/autostart/abilithic-dhc.desktop"
+cp "$REPO_DIR/agent/kiosk/blueforge.desktop" "$USER_HOME/.config/autostart/"
+chown "$TARGET_USER:$TARGET_USER" "$USER_HOME/.config/autostart/blueforge.desktop"
 
 echo "[5/6] Pasang shortcut restart manual di Desktop (fallback kalau window macet)..."
 install -d -o "$TARGET_USER" -g "$TARGET_USER" "$USER_HOME/Desktop"
@@ -58,12 +58,12 @@ cat <<EOF
  - Aplikasi DHC akan muncul otomatis saat login desktop, dan otomatis
    membuka lagi sendiri kalau jendela tidak sengaja tertutup peserta.
  - Kalau suatu saat window benar-benar macet/hilang, ada shortcut
-   "Restart abilithic DHC" di Desktop -- tinggal double-click, tidak
+   "Restart BlueForge" di Desktop -- tinggal double-click, tidak
    perlu buka terminal.
  - Uji sekarang tanpa reboot:
-     python3 /opt/abilithic-agent/kiosk.py
+     python3 /opt/blueforge-agent/kiosk.py
  - Pastikan config sudah benar (portal_url ke URL Vercel):
-     sudo nano /opt/abilithic-agent/config.yaml
+     sudo nano /opt/blueforge-agent/config.yaml
  - Jangan lupa tanam celah sebelum lomba:
      sudo bash "$REPO_DIR/image/build/provision.sh"
 
